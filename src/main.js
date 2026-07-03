@@ -1,3 +1,4 @@
+import { initThreeScene } from './threeScene.js'
 import { profile, skills, experiences, projects } from './config.js'
 import './styles.css'
 
@@ -12,6 +13,7 @@ const escapeHtml = (value) => String(value)
 
 function typeWelcome() {
   const el = $('#welcome-text')
+  if (!el) return
   const text = `Welcome, I am ${profile.englishName}'s AI Guide.`
   let index = 0
   const tick = () => {
@@ -22,81 +24,10 @@ function typeWelcome() {
   tick()
 }
 
-function setupCanvas() {
-  const canvas = $('#space-canvas')
-  const ctx = canvas.getContext('2d')
-  const particles = []
-  const maxParticles = window.innerWidth < 768 ? 60 : 120
-
-  function resize() {
-    canvas.width = window.innerWidth * window.devicePixelRatio
-    canvas.height = window.innerHeight * window.devicePixelRatio
-    canvas.style.width = `${window.innerWidth}px`
-    canvas.style.height = `${window.innerHeight}px`
-    ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0)
-  }
-
-  function init() {
-    particles.length = 0
-    for (let i = 0; i < maxParticles; i += 1) {
-      particles.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: (Math.random() - 0.5) * 0.35,
-        r: Math.random() * 1.8 + 0.6,
-        alpha: Math.random() * 0.65 + 0.15
-      })
-    }
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
-    ctx.fillStyle = 'rgba(6, 17, 31, 0.36)'
-    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight)
-
-    particles.forEach((p, i) => {
-      p.x += p.vx
-      p.y += p.vy
-      if (p.x < 0 || p.x > window.innerWidth) p.vx *= -1
-      if (p.y < 0 || p.y > window.innerHeight) p.vy *= -1
-
-      ctx.beginPath()
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-      ctx.fillStyle = `rgba(125, 211, 252, ${p.alpha})`
-      ctx.fill()
-
-      for (let j = i + 1; j < particles.length; j += 1) {
-        const q = particles[j]
-        const dx = p.x - q.x
-        const dy = p.y - q.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        if (dist < 115) {
-          ctx.beginPath()
-          ctx.moveTo(p.x, p.y)
-          ctx.lineTo(q.x, q.y)
-          ctx.strokeStyle = `rgba(14, 165, 233, ${0.14 * (1 - dist / 115)})`
-          ctx.lineWidth = 1
-          ctx.stroke()
-        }
-      }
-    })
-
-    requestAnimationFrame(draw)
-  }
-
-  resize()
-  init()
-  draw()
-  window.addEventListener('resize', () => {
-    resize()
-    init()
-  })
-}
-
 function setupCursor() {
   const dot = $('#cursor-dot')
   const ring = $('#cursor-ring')
+  if (!dot || !ring) return
   let x = window.innerWidth / 2
   let y = window.innerHeight / 2
   let ringX = x
@@ -124,6 +55,7 @@ function setupCursor() {
 
 function renderSkills() {
   const container = $('#skill-constellation')
+  if (!container) return
   container.innerHTML = skills.map((skill, index) => {
     const angle = (index / skills.length) * Math.PI * 2
     const radius = index % 2 === 0 ? 40 : 78
@@ -140,6 +72,7 @@ function renderSkills() {
 
 function renderExperience() {
   const container = $('#timeline')
+  if (!container) return
   container.innerHTML = experiences.map((item, index) => `
     <article class="timeline-item" style="--delay:${index * 120}ms">
       <div class="timeline-dot"></div>
@@ -156,6 +89,7 @@ function renderExperience() {
 
 function renderProjects() {
   const container = $('#project-grid')
+  if (!container) return
   container.innerHTML = projects.map((project, index) => `
     <article class="project-card glass-card" style="--delay:${index * 80}ms">
       <div class="planet planet-${(index % 6) + 1}"></div>
@@ -170,6 +104,7 @@ function renderProjects() {
 
 function renderHeatmap() {
   const container = $('#heatmap')
+  if (!container) return
   const cells = Array.from({ length: 52 * 7 }, (_, i) => {
     const seed = Math.sin(i * 12.9898) * 43758.5453
     const value = Math.abs(seed - Math.floor(seed))
@@ -193,16 +128,6 @@ function setupNavigation() {
   }, { threshold: 0.42 })
 
   sections.forEach((section) => observer.observe(section))
-
-  $$('.tree-node').forEach((button) => {
-    button.addEventListener('click', () => {
-      const target = button.dataset.target
-      const el = document.getElementById(target)
-      document.body.classList.add('warp')
-      window.setTimeout(() => document.body.classList.remove('warp'), 780)
-      el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
-  })
 }
 
 function setupReveal() {
@@ -216,7 +141,9 @@ function setupReveal() {
 }
 
 function setupContactForm() {
-  $('#contact-form').addEventListener('submit', (event) => {
+  const formEl = $('#contact-form')
+  if (!formEl) return
+  formEl.addEventListener('submit', (event) => {
     event.preventDefault()
     const form = new FormData(event.currentTarget)
     const name = form.get('name') || 'Portfolio visitor'
@@ -244,6 +171,7 @@ function setupTerminal() {
   const modal = $('#terminal-modal')
   const output = $('#terminal-output')
   const input = $('#terminal-command')
+  if (!modal || !output || !input) return
 
   const open = () => {
     modal.classList.add('open')
@@ -272,15 +200,15 @@ function setupTerminal() {
     if (normalized === 'contact') window.location.href = `mailto:${profile.email}`
   }
 
-  $('#open-terminal').addEventListener('click', open)
-  $('#close-terminal').addEventListener('click', close)
+  $('#open-terminal')?.addEventListener('click', open)
+  $('#close-terminal')?.addEventListener('click', close)
   modal.addEventListener('click', (event) => {
     if (event.target === modal) close()
   })
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') close()
   })
-  $('#terminal-form').addEventListener('submit', (event) => {
+  $('#terminal-form')?.addEventListener('submit', (event) => {
     event.preventDefault()
     print(input.value)
     input.value = ''
@@ -291,8 +219,8 @@ function setupTerminal() {
 }
 
 function boot() {
+  initThreeScene()
   typeWelcome()
-  setupCanvas()
   setupCursor()
   renderSkills()
   renderExperience()
