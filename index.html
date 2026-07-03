@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#06111f" />
+    <meta
+      name="description"
+      content="张本瑜的 AI 科技树个人作品集：Java 后端、金融科技、开放 API、微服务、分布式系统与项目经验。"
+    />
+    <title>张本瑜｜AI Digital Garden Portfolio</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%2306111f'/%3E%3Cpath d='M32 8c8 11 16 19 16 30 0 10-7 18-16 18s-16-8-16-18C16 27 24 19 32 8Z' fill='%230ea5e9'/%3E%3Cpath d='M32 18v36M21 36c8-1 14-6 19-16M43 36c-8-1-14-6-19-16' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <canvas id="space-canvas" aria-hidden="true"></canvas>
+    <div id="cursor-dot" aria-hidden="true"></div>
+    <div id="cursor-ring" aria-hidden="true"></div>
+
+    <header class="site-header" id="site-header">
+      <a class="brand" href="#home" aria-label="返回首页">
+        <span class="brand-mark">Z</span>
+        <span class="brand-text">AI Digital Garden</span>
+      </a>
+      <nav class="main-nav" aria-label="主导航">
+        <a href="#home" class="nav-link active">Home</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#skills" class="nav-link">Skills</a>
+        <a href="#experience" class="nav-link">Experience</a>
+        <a href="#projects" class="nav-link">Projects</a>
+        <a href="#github" class="nav-link">GitHub</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+      <button class="terminal-trigger" id="open-terminal" type="button">Open Terminal</button>
+    </header>
+
+    <main>
+      <section class="hero section" id="home" data-scene="home">
+        <div class="hero-grid">
+          <div class="hero-copy reveal">
+            <div class="eyebrow">Java Backend · FinTech · Open API · Distributed Systems</div>
+            <h1>
+              张本瑜
+              <span>把后端工程能力，做成一棵可交互的科技树。</span>
+            </h1>
+            <p class="hero-description">
+              9年+ Java 后端开发经验，长期深耕证券开放 API、银行 eDDA 资金链路、微服务网关、分布式任务、实时行情与高并发交易链路优化。
+            </p>
+            <div class="hero-actions">
+              <a class="btn primary" href="/resume-zhang-benyu.md" download>Download Resume</a>
+              <a class="btn ghost" href="#projects">Explore Projects</a>
+              <a class="btn text" href="https://github.com/zbyisredeemer" target="_blank" rel="noreferrer">View GitHub</a>
+            </div>
+            <div class="terminal-strip" aria-label="技术背景命令行">
+              <span>&gt; initializing skills graph...</span>
+              <span>&gt; connecting open-api gateway...</span>
+              <span>&gt; rendering fintech timeline...</span>
+            </div>
+          </div>
+
+          <div class="universe-stage reveal" aria-label="AI 科技树交互主视觉">
+            <div class="ai-guide" id="ai-guide">
+              <div class="guide-orbit"></div>
+              <div class="guide-body">
+                <div class="guide-head"></div>
+                <div class="guide-core"></div>
+                <div class="guide-shadow"></div>
+              </div>
+              <div class="speech-bubble"><span id="welcome-text"></span></div>
+            </div>
+
+            <div class="earth-wrap">
+              <div class="earth">
+                <div class="earth-glow"></div>
+                <div class="earth-grid-lines"></div>
+                <span class="city-dot dot-beijing" title="北京 / 金融科技"></span>
+                <span class="city-dot dot-qingdao" title="青岛 / 多式联运"></span>
+                <span class="city-dot dot-hk" title="香港 / 券商行情"></span>
+              </div>
+            </div>
+
+            <div class="tech-tree">
+              <button class="tree-node node-about" data-target="about">About</button>
+              <button class="tree-node node-skills" data-target="skills">Skills</button>
+              <button class="tree-node node-exp" data-target="experience">Experience</button>
+              <button class="tree-node node-projects" data-target="projects">Projects</button>
+              <button class="tree-node node-github" data-target="github">GitHub</button>
+              <button class="tree-node node-contact" data-target="contact">Contact</button>
+              <div class="tree-trunk"></div>
+              <div class="branch b1"></div>
+              <div class="branch b2"></div>
+              <div class="branch b3"></div>
+              <div class="branch b4"></div>
+              <div class="branch b5"></div>
+              <div class="branch b6"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section about" id="about" data-scene="about">
+        <div class="section-heading reveal">
+          <span class="section-kicker">01 / About</span>
+          <h2>不是单纯展示履历，而是展示一个后端工程师的系统能力。</h2>
+        </div>
+        <div class="about-layout">
+          <article class="glass-card profile-card reveal">
+            <img class="avatar" src="https://avatars.githubusercontent.com/u/46104333?v=4" alt="GitHub avatar" />
+            <div>
+              <h3>张本瑜 · Senior Java Backend Engineer</h3>
+              <p>
+                本科毕业于南京农业大学，长期负责 0-1 系统建设、微服务治理、资金链路、开放 API 网关、性能优化与跨团队落地。
+              </p>
+            </div>
+          </article>
+          <div class="metrics reveal">
+            <div class="metric"><strong>9+</strong><span>Years Java</span></div>
+            <div class="metric"><strong>0→1</strong><span>System Design</span></div>
+            <div class="metric"><strong>3x</strong><span>Throughput Optimization</span></div>
+            <div class="metric"><strong>FinTech</strong><span>Domain Focus</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section skills" id="skills" data-scene="skills">
+        <div class="section-heading reveal">
+          <span class="section-kicker">02 / Skills</span>
+          <h2>技能树不是堆关键词，而是围绕真实业务链路组织。</h2>
+        </div>
+        <div class="skill-constellation reveal" id="skill-constellation"></div>
+      </section>
+
+      <section class="section experience" id="experience" data-scene="experience">
+        <div class="section-heading reveal">
+          <span class="section-kicker">03 / Experience</span>
+          <h2>半个地球展示公司时间线、核心技能和关键成果。</h2>
+        </div>
+        <div class="timeline reveal" id="timeline"></div>
+      </section>
+
+      <section class="section projects" id="projects" data-scene="projects">
+        <div class="section-heading reveal">
+          <span class="section-kicker">04 / Projects</span>
+          <h2>把项目做成星图：每个项目是一颗可点亮的技术星球。</h2>
+        </div>
+        <div class="project-grid reveal" id="project-grid"></div>
+      </section>
+
+      <section class="section github" id="github" data-scene="github">
+        <div class="section-heading reveal">
+          <span class="section-kicker">05 / GitHub</span>
+          <h2>把公开技术足迹做成可信度资产。</h2>
+        </div>
+        <div class="github-panel glass-card reveal">
+          <div>
+            <h3>GitHub Contribution Graph</h3>
+            <p>默认使用当前连接器识别到的 GitHub 用户：<strong>zbyisredeemer</strong>。你后续可以在 <code>src/config.js</code> 中替换用户名。</p>
+          </div>
+          <a class="btn ghost" href="https://github.com/zbyisredeemer" target="_blank" rel="noreferrer">Open GitHub</a>
+          <div class="heatmap" id="heatmap" aria-label="GitHub 年度热力图模拟展示"></div>
+        </div>
+      </section>
+
+      <section class="section contact" id="contact" data-scene="contact">
+        <div class="section-heading reveal">
+          <span class="section-kicker">06 / Contact</span>
+          <h2>给别人一个可以直接发邮件的入口。</h2>
+        </div>
+        <div class="contact-layout">
+          <form class="contact-form glass-card reveal" id="contact-form">
+            <label>
+              Your Name
+              <input name="name" placeholder="你的姓名" autocomplete="name" />
+            </label>
+            <label>
+              Email
+              <input name="email" placeholder="your@email.com" autocomplete="email" />
+            </label>
+            <label>
+              Message
+              <textarea name="message" rows="5" placeholder="想聊项目、机会或合作，可以直接写在这里。"></textarea>
+            </label>
+            <button class="btn primary" type="submit">Send Email</button>
+          </form>
+          <div class="contact-card glass-card reveal">
+            <h3>Connect</h3>
+            <p>欢迎交流 Java 后端、金融科技、开放 API、微服务治理、AI Coding 与个人作品集建设。</p>
+            <div class="contact-links">
+              <a href="mailto:zhangbenyu_java@163.com">zhangbenyu_java@163.com</a>
+              <a href="https://github.com/zbyisredeemer" target="_blank" rel="noreferrer">github.com/zbyisredeemer</a>
+              <a href="/resume-zhang-benyu.md" download>下载 Markdown 简历</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="terminal-modal" id="terminal-modal" aria-hidden="true">
+      <div class="terminal-window" role="dialog" aria-modal="true" aria-label="Terminal Portfolio">
+        <div class="terminal-bar">
+          <span class="traffic red"></span>
+          <span class="traffic yellow"></span>
+          <span class="traffic green"></span>
+          <strong>zby@portfolio:~</strong>
+          <button id="close-terminal" type="button" aria-label="关闭终端">×</button>
+        </div>
+        <div class="terminal-body" id="terminal-output">
+          <p><span class="muted">AI Guide:</span> 输入 <code>help</code> 查看命令，或点击下方快捷命令。</p>
+        </div>
+        <div class="terminal-quick-actions">
+          <button data-command="help">help</button>
+          <button data-command="skills">skills</button>
+          <button data-command="projects">projects</button>
+          <button data-command="resume">resume</button>
+          <button data-command="contact">contact</button>
+        </div>
+        <form class="terminal-input" id="terminal-form">
+          <span>&gt;</span>
+          <input id="terminal-command" autocomplete="off" placeholder="type command..." />
+        </form>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
