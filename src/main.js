@@ -4,8 +4,6 @@ import './three-overrides.css'
 import './galaxy-overrides.css'
 import './bechir-overrides.css'
 
-const $ = (selector, scope = document) => scope.querySelector(selector)
-const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector))
 const escapeHtml = (value) => String(value)
   .replaceAll('&', '&amp;')
   .replaceAll('<', '&lt;')
@@ -109,10 +107,14 @@ function setupModuleOverlay() {
   modal.addEventListener('click', (event) => {
     if (event.target.closest('[data-close-module]')) closeModule()
   })
+
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeModule()
   })
-  window.addEventListener('portfolio:open-module', (event) => openModule(event.detail?.target || event.detail?.label || 'about'))
+
+  window.addEventListener('portfolio:open-module', (event) => {
+    openModule(event.detail?.target || event.detail?.label || 'about')
+  })
 }
 
 const stackIcons = [
@@ -120,37 +122,71 @@ const stackIcons = [
   ['API', 'Gateway'], ['JOB', 'XXL-JOB'], ['ES', 'Elastic'], ['🐳', 'Docker'], ['Git', 'Git'], ['🐧', 'Linux']
 ]
 
+const projectAccent = ['purple', 'green', 'cyan', 'orange', 'violet', 'blue']
+
 function renderTechIcons() {
-  return stackIcons.map(([icon, label]) => `<button class="space-tech" type="button" data-module="skills" title="${escapeHtml(label)}"><span>${escapeHtml(icon)}</span></button>`).join('')
+  return stackIcons.map(([icon, label], index) => `
+    <button class="space-tech tech-${index + 1}" type="button" data-module="skills" title="${escapeHtml(label)}">
+      <span>${escapeHtml(icon)}</span>
+      <em>${escapeHtml(label)}</em>
+    </button>
+  `).join('')
 }
 
 function renderProjectCards() {
-  return projects.slice(0, 5).map((project, index) => `
-    <article class="orbit-project-card card-${index + 1}" data-module="projects">
+  return projects.slice(0, 6).map((project, index) => `
+    <article class="orbit-project-card card-${index + 1} ${projectAccent[index] || 'purple'}" data-module="projects">
       <small>${escapeHtml(project.type)}</small>
       <h3>${escapeHtml(project.name)}</h3>
       <p>${escapeHtml(project.desc)}</p>
-      <a>View</a>
+      <div class="project-card-tags">${(project.stack || []).slice(0, 3).map(tag => `<span>${escapeHtml(tag)}</span>`).join('')}</div>
+      <a aria-label="查看 ${escapeHtml(project.name)} 详情">View Case</a>
     </article>
   `).join('')
 }
 
 function renderTimelineTabs() {
-  return projects.slice(0, 9).map((project, index) => `<button class="timeline-chip ${index === 0 ? 'active' : ''}" type="button" data-project-index="${index}">${escapeHtml(project.name.slice(0, 18))}</button>`).join('')
+  return projects.slice(0, 9).map((project, index) => `
+    <button class="timeline-chip ${index === 0 ? 'active' : ''}" type="button" data-project-index="${index}">
+      <span>${String(index + 1).padStart(2, '0')}</span>${escapeHtml(project.name.slice(0, 18))}
+    </button>
+  `).join('')
+}
+
+function renderExperienceRail() {
+  return experiences.map((item, index) => `
+    <article class="experience-pill ${index === 0 ? 'current' : ''}">
+      <span>${escapeHtml(item.period)}</span>
+      <h3>${escapeHtml(item.company)}</h3>
+      <p>${escapeHtml(item.role)}</p>
+    </article>
+  `).join('')
+}
+
+function renderSkillMatrix() {
+  return skills.slice(0, 10).map((skill) => `
+    <article class="skill-row">
+      <div><strong>${escapeHtml(skill.name)}</strong><span>${escapeHtml(skill.group)}</span></div>
+      <i style="--level:${Number(skill.level) || 80}%"><b></b></i>
+    </article>
+  `).join('')
 }
 
 function timelineSnapshot(index = 0) {
   const project = projects[index] || projects[0]
   if (!project) return ''
+
   return `
     <article class="impact-card">
-      <h3>${escapeHtml(project.name)} Impact Snapshot</h3>
-      <small>${escapeHtml(project.type)}</small>
-      <p>${escapeHtml(project.desc)}</p>
+      <div class="impact-head">
+        <small>${escapeHtml(project.type)}</small>
+        <h3>${escapeHtml(project.name)} Impact Snapshot</h3>
+        <p>${escapeHtml(project.desc)}</p>
+      </div>
       <div class="impact-stats">
         <div><span>STACK ITEMS</span><strong>${project.stack?.length || 6}</strong></div>
         <div><span>CORE FOCUS</span><strong>${project.highlight ? '1' : '3'}</strong></div>
-        <div><span>ROADMAP ITEMS</span><strong>3</strong></div>
+        <div><span>ROADMAP</span><strong>03</strong></div>
       </div>
       <div class="impact-tags">${(project.stack || []).slice(0, 7).map(tag => `<span>${escapeHtml(tag)}</span>`).join('')}</div>
       <hr>
@@ -158,6 +194,7 @@ function timelineSnapshot(index = 0) {
       <p>${escapeHtml(project.highlight || 'Core stack used to design, implement, secure, deploy, and evolve this project.')}</p>
       <h4>Project Links</h4>
       <button type="button" data-module="github">GitHub Repo</button>
+      <button type="button" data-module="contact">Contact Me</button>
     </article>
   `
 }
@@ -168,22 +205,33 @@ function setupSpacePortfolio() {
   page.innerHTML = `
     <div class="star-layer star-a" aria-hidden="true"></div>
     <div class="star-layer star-b" aria-hidden="true"></div>
+    <div class="star-layer star-c" aria-hidden="true"></div>
+    <div class="aurora-field" aria-hidden="true"></div>
+    <div class="meteor meteor-a" aria-hidden="true"></div>
+    <div class="meteor meteor-b" aria-hidden="true"></div>
+
     <div class="saturn-scene" aria-hidden="true">
       <div class="saturn-glow"></div>
       <div class="saturn-ring ring-back"></div>
-      <div class="saturn-body"></div>
+      <div class="saturn-body"><i></i><i></i><i></i></div>
       <div class="saturn-ring ring-front"></div>
+      <div class="moon-dot moon-a"></div>
+      <div class="moon-dot moon-b"></div>
+      <div class="moon-dot moon-c"></div>
     </div>
 
     <button class="recruiter-toggle" type="button" aria-pressed="false"><span></span><strong>Recruiter Mode: Off</strong></button>
 
     <aside class="rocket-nav" aria-label="Rocket navigation">
+      <div class="rocket-progress"><span></span></div>
       <div class="rocket-nose"></div>
       <div class="rocket-body">
-        <button type="button" data-scroll="home" class="active">⌂</button>
-        <button type="button" data-scroll="projects">▦</button>
-        <button type="button" data-scroll="timeline">♙</button>
-        <button type="button" data-scroll="contact">✉</button>
+        <button type="button" data-scroll="home" class="active" aria-label="Home">⌂</button>
+        <button type="button" data-scroll="projects" aria-label="Projects">▦</button>
+        <button type="button" data-scroll="timeline" aria-label="Timeline">♙</button>
+        <button type="button" data-scroll="expertise" aria-label="Expertise">◎</button>
+        <button type="button" data-scroll="resume" aria-label="Resume">⇩</button>
+        <button type="button" data-scroll="contact" aria-label="Contact">✉</button>
       </div>
       <div class="rocket-fins"><span></span><span></span></div>
       <div class="rocket-flame"><i></i><b></b></div>
@@ -191,15 +239,28 @@ function setupSpacePortfolio() {
     </aside>
 
     <main class="space-main">
-      <section class="space-hero" id="home">
+      <section class="space-hero space-section" id="home" data-nav="home">
         <div class="hero-left">
+          <div class="space-eyebrow">PORTFOLIO.EXE / ${escapeHtml(profile.englishName)}</div>
           <h1 class="space-title">Hi, I'm <span>Benyu</span><br>Java Backend<br>Developer <em>_</em></h1>
-          <div class="profile-block">
-            <img src="${profile.avatar}" alt="${profile.englishName}">
-            <h2>${profile.englishName}</h2>
-            <p>${profile.title}</p>
+          <p class="space-subtitle">I design reliable backend systems, financial transaction chains, gateway governance and realtime data pipelines.</p>
+          <div class="hero-actions">
+            <a href="${profile.resumeOnlineUrl}" target="_blank" rel="noreferrer">View Resume</a>
+            <a href="${profile.resumeUrl}" download>Download CV</a>
+            <button type="button" data-module="projects">Explore Work</button>
           </div>
+
+          <div class="profile-block">
+            <img src="${profile.avatar}" alt="${escapeHtml(profile.englishName)}">
+            <div>
+              <h2>${escapeHtml(profile.englishName)}</h2>
+              <p>${escapeHtml(profile.title)}</p>
+              <small>${escapeHtml(profile.location)} · ${escapeHtml(profile.email)}</small>
+            </div>
+          </div>
+
           <div class="tech-grid">${renderTechIcons()}</div>
+
           <section class="music-widget">
             <div class="music-label">♪ NOW LISTENING</div>
             <article class="music-card">
@@ -207,7 +268,7 @@ function setupSpacePortfolio() {
               <div class="track-info">
                 <h3>Code Flow Sonata</h3>
                 <p>Backend Engineering · System Design</p>
-                <div class="track-tags"><span>JAVA</span><span>FINTECH</span></div>
+                <div class="track-tags"><span>JAVA</span><span>FINTECH</span><span>API</span></div>
               </div>
               <div class="paused-dot">PAUSED</div>
               <div class="progress"><span></span></div>
@@ -215,50 +276,100 @@ function setupSpacePortfolio() {
             </article>
           </section>
         </div>
+
+        <div class="hero-right" aria-hidden="true">
+          <div class="orbit-dashboard">
+            <div class="floating-code window-a">
+              <small>system.status</small>
+              <strong>STABLE</strong>
+              <span>latency ↓ · failure rate ↓</span>
+            </div>
+            <div class="floating-code window-b">
+              <small>gateway.scope</small>
+              <strong>AK/SK + JWT</strong>
+              <span>route · auth · audit</span>
+            </div>
+            <div class="mini-orbit orbit-one"><i></i></div>
+            <div class="mini-orbit orbit-two"><i></i></div>
+            <div class="core-avatar-card">
+              <img src="${profile.avatar}" alt="">
+              <h3>Senior Backend</h3>
+              <p>Microservices · High Concurrency · FinTech</p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="space-projects" id="projects">
-        <h2>Projects</h2>
+      <section class="space-projects space-section" id="projects" data-nav="projects">
+        <div class="section-title-block">
+          <span>SELECTED CASES</span>
+          <h2>Projects</h2>
+          <p>每张卡片对应一个真实业务复杂度节点，按“工程价值”而不是简单罗列技术栈呈现。</p>
+        </div>
         <div class="floating-projects">${renderProjectCards()}</div>
       </section>
 
-      <section class="build-timeline" id="timeline">
-        <h2>Build Timeline</h2>
-        <div class="timeline-chips">${renderTimelineTabs()}</div>
-        <div class="timeline-snapshot">${timelineSnapshot(0)}</div>
+      <section class="build-timeline space-section" id="timeline" data-nav="timeline">
+        <div class="section-title-block compact">
+          <span>BUILD HISTORY</span>
+          <h2>Build Timeline</h2>
+          <p>用时间线突出平台建设、资金链路、网关治理、行情接入和稳定性治理的连续能力。</p>
+        </div>
+        <div class="timeline-wrap">
+          <div class="timeline-chips">${renderTimelineTabs()}</div>
+          <div class="timeline-snapshot">${timelineSnapshot(0)}</div>
+        </div>
+        <div class="experience-rail">${renderExperienceRail()}</div>
       </section>
 
-      <section class="personal-section">
+      <section class="personal-section space-section" id="expertise" data-nav="expertise">
+        <div class="section-title-block compact">
+          <span>WHAT I CARE ABOUT</span>
+          <h2>Engineering Interests</h2>
+        </div>
         <div class="interest-cards">
           <article><small>OPEN API</small><h3>Gateway Governance</h3><p>Version routing, auth, rate limit, idempotency and stable external access.</p><strong>Engineering System</strong></article>
           <article class="active"><small>FINTECH</small><h3>Banking Flow</h3><p>eDDA, deposit, withdrawal, callback, reconciliation and compensation.</p><strong>Core Business</strong></article>
           <article><small>REALTIME</small><h3>Market Data</h3><p>Dark market quotes, subscription sync, receiver service and push pipeline.</p><strong>Streaming</strong></article>
         </div>
+        <div class="skill-matrix">${renderSkillMatrix()}</div>
       </section>
 
-      <section class="resume-section" id="contact">
-        <div class="terminal-download"><strong><span>$</span> ./download_resume.sh</strong><p>Click to download my resume.</p></div>
-        <a href="/resume-zhang-benyu.md" download class="download-hit">Download Resume</a>
+      <section class="resume-section space-section" id="resume" data-nav="resume">
+        <div class="terminal-download">
+          <strong><span>$</span> ./download_resume.sh</strong>
+          <p>Click to download my resume or inspect the online CV.</p>
+          <div>
+            <a href="${profile.resumeUrl}" download>Download Resume</a>
+            <a href="${profile.resumeOnlineUrl}" target="_blank" rel="noreferrer">Open Online CV</a>
+          </div>
+        </div>
       </section>
 
-      <footer class="space-footer">
+      <footer class="space-footer space-section" id="contact" data-nav="contact">
         <div>
-          <strong>${profile.englishName}</strong>
+          <strong>${escapeHtml(profile.englishName)}</strong>
           <p>Senior Java backend engineer focused on modern backend systems and real-world business reliability.</p>
         </div>
-        <div><h4>QUICK LINKS</h4><a href="#home">Home</a><a href="#projects">Projects</a><a href="/resume.html">Resume</a><a href="mailto:${profile.email}">Contact</a></div>
-        <div><h4>GET IN TOUCH</h4><p>${profile.email}</p><div class="socials"><a href="${profile.githubUrl}">GH</a><a href="mailto:${profile.email}">@</a><a href="/resume.html">CV</a></div></div>
+        <div><h4>QUICK LINKS</h4><a href="#home">Home</a><a href="#projects">Projects</a><a href="${profile.resumeOnlineUrl}">Resume</a><a href="mailto:${profile.email}">Contact</a></div>
+        <div><h4>GET IN TOUCH</h4><p>${escapeHtml(profile.email)}</p><div class="socials"><a href="${profile.githubUrl}" target="_blank" rel="noreferrer">GH</a><a href="mailto:${profile.email}">@</a><a href="${profile.resumeOnlineUrl}">CV</a></div></div>
       </footer>
     </main>
   `
   document.body.appendChild(page)
 
-  page.querySelectorAll('[data-module]').forEach((item) => {
-    item.addEventListener('click', () => window.dispatchEvent(new CustomEvent('portfolio:open-module', { detail: { target: item.dataset.module } })))
-  })
+  page.addEventListener('click', (event) => {
+    const moduleTarget = event.target.closest('[data-module]')
+    if (moduleTarget) {
+      window.dispatchEvent(new CustomEvent('portfolio:open-module', { detail: { target: moduleTarget.dataset.module } }))
+      return
+    }
 
-  page.querySelectorAll('[data-scroll]').forEach((item) => {
-    item.addEventListener('click', () => document.getElementById(item.dataset.scroll)?.scrollIntoView({ behavior: 'smooth' }))
+    const scrollTarget = event.target.closest('[data-scroll]')
+    if (scrollTarget) {
+      const target = page.querySelector(`#${CSS.escape(scrollTarget.dataset.scroll)}`)
+      target?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   })
 
   const recruiter = page.querySelector('.recruiter-toggle')
@@ -274,18 +385,34 @@ function setupSpacePortfolio() {
       page.querySelectorAll('[data-project-index]').forEach(t => t.classList.remove('active'))
       tab.classList.add('active')
       snapshot.innerHTML = timelineSnapshot(Number(tab.dataset.projectIndex))
-      snapshot.querySelectorAll('[data-module]').forEach((item) => item.addEventListener('click', () => window.dispatchEvent(new CustomEvent('portfolio:open-module', { detail: { target: item.dataset.module } }))))
     })
   })
 
+  const navButtons = Array.from(page.querySelectorAll('[data-scroll]'))
+  const sections = Array.from(page.querySelectorAll('[data-nav]'))
+  const setActiveNav = (id) => {
+    navButtons.forEach((button) => button.classList.toggle('active', button.dataset.scroll === id))
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries
+      .filter(entry => entry.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+    if (visible) setActiveNav(visible.target.dataset.nav)
+  }, { threshold: [0.18, 0.36, 0.6] })
+  sections.forEach(section => observer.observe(section))
+
   let scrollTimer = null
-  window.addEventListener('scroll', () => {
-    document.body.classList.add('scrolling-rocket')
+  const updateScrollState = () => {
     const progress = window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight)
     document.documentElement.style.setProperty('--rocket-progress', String(progress))
+    page.style.setProperty('--space-scroll', String(progress))
+    document.body.classList.add('scrolling-rocket')
     window.clearTimeout(scrollTimer)
     scrollTimer = window.setTimeout(() => document.body.classList.remove('scrolling-rocket'), 160)
-  }, { passive: true })
+  }
+  window.addEventListener('scroll', updateScrollState, { passive: true })
+  updateScrollState()
 }
 
 function boot() {
