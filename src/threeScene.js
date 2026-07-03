@@ -1,20 +1,21 @@
 import * as THREE from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-const NODE_DEFS = [
-  { label: 'About', target: 'about', position: [-3.35, 2.05, -0.72], color: 0x22d3ee },
-  { label: 'Skills', target: 'skills', position: [3.25, 2.05, -0.72], color: 0x34d399 },
-  { label: 'Experience', target: 'experience', position: [-3.95, 0.22, -0.28], color: 0xfacc15 },
-  { label: 'Projects', target: 'projects', position: [3.95, 0.22, -0.28], color: 0xf472b6 },
-  { label: 'GitHub', target: 'github', position: [-2.75, -1.55, 0.08], color: 0x8b5cf6 },
-  { label: 'Contact', target: 'contact', position: [2.75, -1.55, 0.08], color: 0x67e8f9 }
+const MODULES = [
+  { label: 'About', target: 'about', position: [-3.45, 2.05, -0.75], color: 0x22d3ee },
+  { label: 'Skills', target: 'skills', position: [3.35, 2.0, -0.75], color: 0x34d399 },
+  { label: 'Experience', target: 'experience', position: [-4.0, 0.2, -0.25], color: 0xfacc15 },
+  { label: 'Projects', target: 'projects', position: [4.0, 0.2, -0.25], color: 0xf472b6 },
+  { label: 'GitHub', target: 'github', position: [-2.65, -1.55, 0.1], color: 0x8b5cf6 },
+  { label: 'Contact', target: 'contact', position: [2.75, -1.55, 0.1], color: 0x67e8f9 }
 ]
 
-const ROBOT_MODEL_URLS = [
-  '/models/robot.glb',
-  '/models/robot.gltf',
-  'https://threejs.org/examples/models/gltf/RobotExpressive/RobotExpressive.glb'
-]
+function makeMaterial(color, emissive = 0x000000, intensity = 0, metalness = 0.65, roughness = 0.32) {
+  return new THREE.MeshStandardMaterial({ color, emissive, emissiveIntensity: intensity, metalness, roughness })
+}
+
+function makeGlow(color, opacity = 0.18) {
+  return new THREE.MeshBasicMaterial({ color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false })
+}
 
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath()
@@ -26,286 +27,231 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath()
 }
 
-function makeCanvasTexture(draw, width = 640, height = 250) {
+function textSprite(text, color = '#e6f6ff') {
   const canvas = document.createElement('canvas')
-  canvas.width = width
-  canvas.height = height
+  canvas.width = 640
+  canvas.height = 240
   const ctx = canvas.getContext('2d')
-  draw(ctx, width, height)
+  const gradient = ctx.createLinearGradient(0, 0, 640, 240)
+  gradient.addColorStop(0, 'rgba(2, 6, 23, .94)')
+  gradient.addColorStop(1, 'rgba(14, 165, 233, .46)')
+  ctx.fillStyle = gradient
+  ctx.strokeStyle = 'rgba(125, 211, 252, .9)'
+  ctx.lineWidth = 4
+  roundRect(ctx, 24, 42, 592, 156, 42)
+  ctx.fill()
+  ctx.stroke()
+  ctx.shadowColor = 'rgba(34, 211, 238, .9)'
+  ctx.shadowBlur = 18
+  ctx.fillStyle = color
+  ctx.font = '900 58px Inter, Arial, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(text, 320, 120)
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
-  return texture
-}
-
-function makeTextSprite(text, color = '#e6f6ff') {
-  const texture = makeCanvasTexture((ctx, w, h) => {
-    const gradient = ctx.createLinearGradient(0, 0, w, h)
-    gradient.addColorStop(0, 'rgba(2, 6, 23, .94)')
-    gradient.addColorStop(1, 'rgba(14, 165, 233, .48)')
-    ctx.fillStyle = gradient
-    ctx.strokeStyle = 'rgba(125, 211, 252, .92)'
-    ctx.lineWidth = 4
-    roundRect(ctx, 24, 42, w - 48, h - 84, 44)
-    ctx.fill()
-    ctx.stroke()
-    ctx.shadowColor = 'rgba(34, 211, 238, .92)'
-    ctx.shadowBlur = 18
-    ctx.fillStyle = color
-    ctx.font = '900 58px Inter, Arial, sans-serif'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(text, w / 2, h / 2)
-  })
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false }))
-  sprite.scale.set(1.45, 0.56, 1)
+  sprite.scale.set(1.42, 0.54, 1)
   return sprite
 }
 
-function makeTube(points, color, radius = 0.02, opacity = 0.8) {
-  const curve = new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(...p)))
-  const geometry = new THREE.TubeGeometry(curve, 56, radius, 10, false)
-  return new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color, transparent: true, opacity, blending: THREE.AdditiveBlending }))
+function addBox(parent, name, size, pos, mat, radiusGlow = false) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), mat)
+  mesh.name = name
+  mesh.position.set(...pos)
+  parent.add(mesh)
+  if (radiusGlow) {
+    const glow = new THREE.Mesh(new THREE.SphereGeometry(radiusGlow, 32, 32), makeGlow(0x22d3ee, 0.12))
+    glow.position.copy(mesh.position)
+    parent.add(glow)
+  }
+  return mesh
 }
 
-function makeGlowSphere(radius, color, opacity = 0.18) {
-  return new THREE.Mesh(
-    new THREE.SphereGeometry(radius, 32, 32),
-    new THREE.MeshBasicMaterial({ color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false })
-  )
+function addCylinder(parent, name, radiusTop, radiusBottom, height, pos, rot, mat) {
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radiusTop, radiusBottom, height, 28), mat)
+  mesh.name = name
+  mesh.position.set(...pos)
+  mesh.rotation.set(...rot)
+  parent.add(mesh)
+  return mesh
 }
 
-function createFallbackRobot() {
+function createProceduralRobot() {
   const robot = new THREE.Group()
-  robot.name = 'CinematicRobotShell'
-  robot.position.set(0, -0.62, 0.15)
+  robot.name = 'ProceduralAIRobot'
+  robot.position.set(0, -0.62, 0.18)
 
-  const fallback = new THREE.Group()
-  fallback.name = 'FallbackProceduralRobot'
-  robot.add(fallback)
+  const white = makeMaterial(0xf8fafc, 0x0ea5e9, 0.08, 0.78, 0.22)
+  const pearl = makeMaterial(0xdbeafe, 0x22d3ee, 0.1, 0.72, 0.26)
+  const black = makeMaterial(0x020617, 0x0f172a, 0.28, 0.9, 0.34)
+  const cyan = makeMaterial(0x22d3ee, 0x22d3ee, 1.65, 0.38, 0.12)
+  const blue = makeMaterial(0x0ea5e9, 0x22d3ee, 1.0, 0.45, 0.16)
 
-  const armor = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.25, metalness: 0.78, emissive: 0x0f172a, emissiveIntensity: 0.16 })
-  const black = new THREE.MeshStandardMaterial({ color: 0x020617, roughness: 0.38, metalness: 0.86, emissive: 0x0f172a, emissiveIntensity: 0.22 })
-  const cyan = new THREE.MeshStandardMaterial({ color: 0x22d3ee, roughness: 0.1, metalness: 0.45, emissive: 0x22d3ee, emissiveIntensity: 1.5 })
-  const skin = new THREE.MeshStandardMaterial({ color: 0xe6f6ff, roughness: 0.34, metalness: 0.18, emissive: 0x67e8f9, emissiveIntensity: 0.18 })
+  const spine = new THREE.Group()
+  robot.add(spine)
 
-  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.98, 1.26, 0.5), armor)
-  torso.position.y = 1.05
-  fallback.add(torso)
-  const abdomen = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.72, 0.42), black)
-  abdomen.position.set(0, 0.36, 0.02)
-  fallback.add(abdomen)
-  const core = new THREE.Mesh(new THREE.OctahedronGeometry(0.18, 1), cyan)
-  core.position.set(0, 1.2, 0.38)
-  fallback.add(core, makeGlowSphere(0.5, 0x22d3ee, 0.14))
-  fallback.children.at(-1).position.copy(core.position)
+  addBox(spine, 'abdomen', [0.56, 0.78, 0.38], [0, 0.35, 0.02], black)
+  addBox(spine, 'torso-main', [1.0, 1.18, 0.46], [0, 1.1, 0], white)
+  addBox(spine, 'chest-dark', [0.68, 0.48, 0.06], [0, 1.2, 0.28], black)
+
+  const chestCore = new THREE.Mesh(new THREE.OctahedronGeometry(0.18, 1), cyan)
+  chestCore.position.set(0, 1.2, 0.36)
+  chestCore.name = 'chestCore'
+  spine.add(chestCore)
+  const chestGlow = new THREE.Mesh(new THREE.SphereGeometry(0.52, 32, 32), makeGlow(0x22d3ee, 0.16))
+  chestGlow.position.copy(chestCore.position)
+  spine.add(chestGlow)
 
   const headPivot = new THREE.Group()
-  headPivot.position.y = 2.15
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.34, 42, 42), skin)
-  head.scale.set(1.05, 1.18, 0.92)
-  const visor = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.11, 0.04), cyan)
-  visor.position.set(0, 0.03, 0.31)
-  const earL = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.12, 32), cyan)
-  earL.position.set(-0.38, 0.04, 0)
-  earL.rotation.z = Math.PI / 2
-  const earR = earL.clone()
-  earR.position.x = 0.38
-  headPivot.add(head, visor, earL, earR)
-  fallback.add(headPivot)
+  headPivot.name = 'headPivot'
+  headPivot.position.set(0, 2.12, 0)
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.36, 48, 48), pearl)
+  head.scale.set(1.02, 1.16, 0.9)
+  headPivot.add(head)
+  addBox(headPivot, 'visor', [0.5, 0.1, 0.04], [0, 0.03, 0.31], cyan)
+  const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.045, 24, 24), cyan)
+  leftEye.position.set(-0.12, 0.055, 0.335)
+  const rightEye = leftEye.clone()
+  rightEye.position.x = 0.12
+  headPivot.add(leftEye, rightEye)
+  addCylinder(headPivot, 'left-ear', 0.13, 0.13, 0.12, [-0.39, 0.04, 0], [0, 0, Math.PI / 2], cyan)
+  addCylinder(headPivot, 'right-ear', 0.13, 0.13, 0.12, [0.39, 0.04, 0], [0, 0, Math.PI / 2], cyan)
+  robot.add(headPivot)
 
-  const upperArmGeo = new THREE.CylinderGeometry(0.08, 0.1, 0.82, 22)
   const leftArmPivot = new THREE.Group()
-  leftArmPivot.position.set(-0.73, 1.42, 0)
-  const leftArm = new THREE.Mesh(upperArmGeo, armor)
-  leftArm.position.y = -0.4
-  leftArmPivot.add(leftArm)
+  leftArmPivot.name = 'leftArmPivot'
+  leftArmPivot.position.set(-0.72, 1.45, 0)
   const rightArmPivot = new THREE.Group()
-  rightArmPivot.position.set(0.73, 1.42, 0)
-  const rightArm = new THREE.Mesh(upperArmGeo, armor)
-  rightArm.position.y = -0.4
-  rightArmPivot.add(rightArm)
-  fallback.add(leftArmPivot, rightArmPivot)
+  rightArmPivot.name = 'rightArmPivot'
+  rightArmPivot.position.set(0.72, 1.45, 0)
+  robot.add(leftArmPivot, rightArmPivot)
+  addCylinder(leftArmPivot, 'left-upper-arm', 0.09, 0.11, 0.78, [0, -0.42, 0], [0, 0, -0.08], white)
+  addCylinder(rightArmPivot, 'right-upper-arm', 0.09, 0.11, 0.78, [0, -0.42, 0], [0, 0, 0.08], white)
+  addCylinder(robot, 'left-forearm', 0.075, 0.1, 0.72, [-1.02, 0.55, 0.08], [0, 0, -0.22], black)
+  const rightForearm = addCylinder(robot, 'right-forearm', 0.075, 0.1, 0.72, [1.02, 0.55, 0.08], [0, 0, 0.22], black)
 
-  const rightForearm = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.09, 0.74, 22), black)
-  rightForearm.position.set(1.02, 0.58, 0.08)
-  rightForearm.rotation.z = 0.22
-  const rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.13, 24, 24), cyan)
-  rightHand.position.set(1.12, 0.18, 0.2)
+  const rightHand = new THREE.Group()
+  rightHand.name = 'rightHand'
+  rightHand.position.set(1.13, 0.17, 0.21)
+  robot.add(rightHand)
+  const palm = new THREE.Mesh(new THREE.SphereGeometry(0.12, 24, 24), cyan)
+  rightHand.add(palm)
+  for (let i = 0; i < 5; i += 1) {
+    const finger = addCylinder(rightHand, `finger-${i}`, 0.012, 0.018, 0.26, [-0.08 + i * 0.04, -0.12, 0.08], [Math.PI / 2.8, 0, 0], pearl)
+    finger.userData.baseX = finger.position.x
+  }
   const leftHand = rightHand.clone()
-  leftHand.position.x = -1.12
-  fallback.add(rightForearm, rightHand, leftHand)
+  leftHand.name = 'leftHand'
+  leftHand.position.set(-1.13, 0.17, 0.21)
+  leftHand.scale.x = -1
+  robot.add(leftHand)
 
+  addCylinder(robot, 'hip', 0.42, 0.5, 0.24, [0, -0.13, 0], [0, 0, 0], black)
   const leftLegPivot = new THREE.Group()
+  leftLegPivot.name = 'leftLegPivot'
   leftLegPivot.position.set(-0.27, -0.22, 0)
   const rightLegPivot = new THREE.Group()
+  rightLegPivot.name = 'rightLegPivot'
   rightLegPivot.position.set(0.27, -0.22, 0)
-  const legGeo = new THREE.CylinderGeometry(0.12, 0.15, 0.92, 24)
-  const leftLeg = new THREE.Mesh(legGeo, armor)
-  leftLeg.position.y = -0.42
-  const rightLeg = new THREE.Mesh(legGeo, armor)
-  rightLeg.position.y = -0.42
-  leftLegPivot.add(leftLeg)
-  rightLegPivot.add(rightLeg)
-  fallback.add(leftLegPivot, rightLegPivot)
-  const footGeo = new THREE.BoxGeometry(0.38, 0.16, 0.62)
-  const leftFoot = new THREE.Mesh(footGeo, black)
-  leftFoot.position.set(-0.27, -1.18, 0.22)
-  const rightFoot = leftFoot.clone()
-  rightFoot.position.x = 0.27
-  fallback.add(leftFoot, rightFoot)
+  robot.add(leftLegPivot, rightLegPivot)
+  addCylinder(leftLegPivot, 'left-thigh', 0.13, 0.16, 0.86, [0, -0.42, 0], [0, 0, 0], white)
+  addCylinder(rightLegPivot, 'right-thigh', 0.13, 0.16, 0.86, [0, -0.42, 0], [0, 0, 0], white)
+  addBox(robot, 'left-foot', [0.4, 0.16, 0.62], [-0.27, -1.18, 0.24], black)
+  addBox(robot, 'right-foot', [0.4, 0.16, 0.62], [0.27, -1.18, 0.24], black)
 
-  ;[0.9, 1.22, 1.55].forEach((r, i) => {
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.005, 8, 128), new THREE.MeshBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending }))
-    ring.position.y = 0.88 + i * 0.28
+  const stripPositions = [[-0.35, 1.55, 0.29], [0.35, 1.55, 0.29], [-0.28, 0.62, 0.25], [0.28, 0.62, 0.25]]
+  stripPositions.forEach((p, i) => addBox(robot, `light-strip-${i}`, [0.06, 0.32, 0.025], p, blue))
+
+  for (let i = 0; i < 4; i += 1) {
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.86 + i * 0.24, 0.005, 8, 120), makeGlow(0x22d3ee, 0.22 - i * 0.035))
     ring.rotation.x = Math.PI / 2
+    ring.position.y = 0.72 + i * 0.25
     ring.userData.rotationSpeed = i % 2 === 0 ? 0.004 : -0.003
-    fallback.add(ring)
-  })
+    robot.add(ring)
+  }
 
   const particleGeo = new THREE.BufferGeometry()
-  const count = 170
+  const count = 220
   const positions = new Float32Array(count * 3)
   for (let i = 0; i < count; i += 1) {
-    const radius = 0.75 + Math.random() * 1.65
-    const angle = Math.random() * Math.PI * 2
-    positions[i * 3] = Math.cos(angle) * radius
-    positions[i * 3 + 1] = Math.random() * 3.55 - 1.12
-    positions[i * 3 + 2] = Math.sin(angle) * radius * 0.75 + 0.1
+    const r = 0.75 + Math.random() * 1.75
+    const a = Math.random() * Math.PI * 2
+    positions[i * 3] = Math.cos(a) * r
+    positions[i * 3 + 1] = Math.random() * 3.6 - 1.12
+    positions[i * 3 + 2] = Math.sin(a) * r * 0.76 + 0.1
   }
   particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-  const particles = new THREE.Points(particleGeo, new THREE.PointsMaterial({ color: 0x7dd3fc, size: 0.022, transparent: true, opacity: 0.78, blending: THREE.AdditiveBlending }))
+  const particles = new THREE.Points(particleGeo, new THREE.PointsMaterial({ color: 0x7dd3fc, size: 0.022, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending }))
   particles.userData.isRobotParticles = true
-  fallback.add(particles)
+  robot.add(particles)
 
-  robot.userData.parts = { fallback, headPivot, leftArmPivot, rightArmPivot, leftLegPivot, rightLegPivot, rightForearm, rightHand, core }
+  robot.userData.parts = { headPivot, leftArmPivot, rightArmPivot, leftLegPivot, rightLegPivot, rightForearm, rightHand, chestCore }
   return robot
 }
 
-function normalizeRobotModel(model, targetHeight = 3.45) {
-  const box = new THREE.Box3().setFromObject(model)
-  const size = new THREE.Vector3()
-  const center = new THREE.Vector3()
-  box.getSize(size)
-  box.getCenter(center)
-  const scale = targetHeight / Math.max(size.y, 0.001)
-  model.scale.setScalar(scale)
-  model.position.sub(center.multiplyScalar(scale))
-  const normalizedBox = new THREE.Box3().setFromObject(model)
-  model.position.y -= normalizedBox.min.y + 1.22
-}
-
-function stylizeLoadedModel(model) {
-  model.traverse((child) => {
-    if (!child.isMesh) return
-    child.castShadow = false
-    child.receiveShadow = false
-    const materials = Array.isArray(child.material) ? child.material : [child.material]
-    materials.filter(Boolean).forEach((material) => {
-      material.metalness = Math.max(material.metalness ?? 0, 0.35)
-      material.roughness = Math.min(material.roughness ?? 0.5, 0.42)
-      if ('emissive' in material) {
-        material.emissive = material.emissive || new THREE.Color(0x000000)
-        material.emissive.lerp(new THREE.Color(0x0ea5e9), 0.18)
-        material.emissiveIntensity = Math.max(material.emissiveIntensity ?? 0, 0.12)
-      }
-    })
-  })
-}
-
-function loadRealRobotModel(robot, mixerState) {
-  const loader = new GLTFLoader()
-  const status = document.getElementById('welcome-text')
-  let index = 0
-
-  const tryNext = () => {
-    const url = ROBOT_MODEL_URLS[index]
-    index += 1
-    if (!url) {
-      if (status) status.textContent = 'Using procedural fallback robot. Add /public/models/robot.glb for cinematic model.'
-      return
-    }
-    loader.load(url, (gltf) => {
-      const model = gltf.scene
-      model.name = 'LoadedCinematicRobotModel'
-      normalizeRobotModel(model)
-      stylizeLoadedModel(model)
-      robot.userData.parts.fallback.visible = false
-      robot.add(model)
-      mixerState.model = model
-      mixerState.mixer = gltf.animations?.length ? new THREE.AnimationMixer(model) : null
-      if (mixerState.mixer) {
-        const preferred = gltf.animations.find(a => /walk|idle|run/i.test(a.name)) || gltf.animations[0]
-        mixerState.action = mixerState.mixer.clipAction(preferred)
-        mixerState.action.reset().fadeIn(0.25).play()
-      }
-      if (status) status.textContent = url.startsWith('/models/') ? 'Cinematic robot model loaded.' : 'Demo GLB robot loaded. Replace /models/robot.glb for movie-grade detail.'
-    }, undefined, tryNext)
-  }
-  tryNext()
-}
-
-function createFloatingModule(node, interactiveNodes) {
+function createModule(node, interactiveNodes) {
   const group = new THREE.Group()
   group.position.set(...node.position)
   group.userData = { target: node.target, label: node.label }
   const panel = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.74), new THREE.MeshBasicMaterial({ color: node.color, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false }))
-  const frame = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.008, 8, 96), new THREE.MeshBasicMaterial({ color: node.color, transparent: true, opacity: 0.52, blending: THREE.AdditiveBlending }))
+  const frame = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.008, 8, 96), makeGlow(node.color, 0.52))
   frame.scale.y = 0.62
   frame.position.z = 0.03
-  const core = new THREE.Mesh(new THREE.SphereGeometry(0.12, 32, 32), new THREE.MeshStandardMaterial({ color: node.color, emissive: node.color, emissiveIntensity: 1.7, roughness: 0.2, metalness: 0.35 }))
+  const core = new THREE.Mesh(new THREE.SphereGeometry(0.12, 32, 32), makeMaterial(node.color, node.color, 1.7, 0.35, 0.16))
   core.position.z = 0.08
   core.userData = { target: node.target, label: node.label, rootGroup: group }
-  const hit = new THREE.Mesh(new THREE.SphereGeometry(0.42, 24, 24), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }))
-  hit.userData = { target: node.target, label: node.label, rootGroup: group }
-  const label = makeTextSprite(node.label)
+  const hit = new THREE.Mesh(new THREE.SphereGeometry(0.45, 24, 24), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }))
+  hit.userData = core.userData
+  const label = textSprite(node.label)
   label.position.set(0, 0.55, 0.08)
-  group.add(panel, frame, core, hit, label, makeGlowSphere(0.55, node.color, 0.12))
+  group.add(panel, frame, core, hit, label)
   interactiveNodes.push(core, hit)
   return group
 }
 
 function createDigitalWorld(interactiveNodes) {
   const group = new THREE.Group()
-  const pointCount = 420
-  const positions = new Float32Array(pointCount * 3)
-  for (let i = 0; i < pointCount; i += 1) {
+  const count = 520
+  const positions = new Float32Array(count * 3)
+  for (let i = 0; i < count; i += 1) {
     positions[i * 3] = (Math.random() - 0.5) * 14
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 8.4
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 9.5 - 1.0
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 8.5
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 9.5 - 1
   }
   const particleGeometry = new THREE.BufferGeometry()
   particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-  group.add(new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: 0x7dd3fc, size: 0.022, transparent: true, opacity: 0.78, blending: THREE.AdditiveBlending })))
+  group.add(new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: 0x7dd3fc, size: 0.022, transparent: true, opacity: 0.76, blending: THREE.AdditiveBlending })))
   const linePositions = []
-  for (let i = 0; i < pointCount; i += 3) {
+  for (let i = 0; i < count; i += 3) {
     const a = i * 3
-    const b = ((i + 23) % pointCount) * 3
+    const b = ((i + 29) % count) * 3
     linePositions.push(positions[a], positions[a + 1], positions[a + 2], positions[b], positions[b + 1], positions[b + 2])
   }
   const lineGeometry = new THREE.BufferGeometry()
   lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3))
   group.add(new THREE.LineSegments(lineGeometry, new THREE.LineBasicMaterial({ color: 0x0ea5e9, transparent: true, opacity: 0.13 })))
   ;['SYSTEM OVERVIEW', 'AI CORE', 'JAVA 8', 'OPEN API', 'GATEWAY', 'REDIS', 'MYSQL', 'TRACE', 'MQ', 'FINTECH'].forEach((text, i) => {
-    const label = makeTextSprite(text, '#67e8f9')
-    const angle = (i / 10) * Math.PI * 2
-    label.position.set(Math.cos(angle) * 5.25, 0.15 + (i % 4) * 0.82, Math.sin(angle) * 2.25 - 2.0)
+    const label = textSprite(text, '#67e8f9')
+    const a = (i / 10) * Math.PI * 2
+    label.position.set(Math.cos(a) * 5.25, 0.15 + (i % 4) * 0.82, Math.sin(a) * 2.25 - 2)
     label.scale.set(1.15, 0.34, 1)
-    label.material.opacity = 0.55
+    label.material.opacity = 0.5
     group.add(label)
   })
-  NODE_DEFS.forEach(node => group.add(createFloatingModule(node, interactiveNodes)))
+  MODULES.forEach(node => group.add(createModule(node, interactiveNodes)))
   return group
 }
 
 function createPlatform() {
   const group = new THREE.Group()
-  ;[1.45, 2.3, 3.15, 4.05, 5.1].forEach((r, i) => {
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.006, 8, 180), new THREE.MeshBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.32, blending: THREE.AdditiveBlending }))
+  for (let i = 0; i < 6; i += 1) {
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(1.4 + i * 0.72, 0.006, 8, 180), makeGlow(0x22d3ee, 0.32 - i * 0.035))
     ring.rotation.x = Math.PI / 2
     ring.position.y = -1.82
     ring.userData.rotationSpeed = i % 2 === 0 ? 0.002 : -0.0015
     group.add(ring)
-  })
+  }
   const grid = new THREE.GridHelper(16, 64, 0x0ea5e9, 0x0f3b5f)
   grid.position.y = -1.84
   grid.material.transparent = true
@@ -315,8 +261,7 @@ function createPlatform() {
 }
 
 function triggerDomEffect(label) {
-  const old = document.querySelector('.module-jump-effect')
-  old?.remove()
+  document.querySelector('.module-jump-effect')?.remove()
   const overlay = document.createElement('div')
   overlay.className = 'module-jump-effect'
   overlay.innerHTML = `<div class="jump-ring"></div><div class="jump-copy"><span>ROBOT ACCESSING MODULE</span><strong>${label}</strong></div>`
@@ -339,12 +284,12 @@ export function initThreeScene({ rootSelector = '#three-scene-root' } = {}) {
   renderer.outputColorSpace = THREE.SRGBColorSpace
   root.appendChild(renderer.domElement)
 
-  scene.add(new THREE.AmbientLight(0x9bdcff, 0.5))
-  const key = new THREE.DirectionalLight(0xffffff, 1.35)
+  scene.add(new THREE.AmbientLight(0x9bdcff, 0.52))
+  const key = new THREE.DirectionalLight(0xffffff, 1.45)
   key.position.set(3.8, 5.5, 4)
-  const rimLeft = new THREE.PointLight(0x22d3ee, 3.4, 12)
-  rimLeft.position.set(-4.2, 2.0, 2.4)
-  const rimRight = new THREE.PointLight(0x8b5cf6, 2.4, 12)
+  const rimLeft = new THREE.PointLight(0x22d3ee, 3.6, 12)
+  rimLeft.position.set(-4.2, 2, 2.4)
+  const rimRight = new THREE.PointLight(0x8b5cf6, 2.5, 12)
   rimRight.position.set(4.4, 1.8, 2.3)
   scene.add(key, rimLeft, rimRight)
 
@@ -354,21 +299,19 @@ export function initThreeScene({ rootSelector = '#three-scene-root' } = {}) {
   const world = new THREE.Group()
   world.position.set(0.45, -0.05, 0)
   scene.add(world)
-  const robot = createFallbackRobot()
+  const robot = createProceduralRobot()
   const platform = createPlatform()
   world.add(robot, platform)
-  const mixerState = { mixer: null, model: null, action: null }
-  loadRealRobotModel(robot, mixerState)
-
   const beam = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0, blending: THREE.AdditiveBlending }))
   world.add(beam)
+
   const raycaster = new THREE.Raycaster()
   const pointer = new THREE.Vector2(99, 99)
   let mouseX = 0
   let mouseY = 0
   let hovered = null
   let action = null
-  const robotHome = new THREE.Vector3(0, -0.62, 0.15)
+  const robotHome = new THREE.Vector3(0, -0.62, 0.18)
   const robotGoal = robotHome.clone()
 
   const getPointer = (event) => {
@@ -418,9 +361,7 @@ export function initThreeScene({ rootSelector = '#three-scene-root' } = {}) {
   }
 
   function animate() {
-    const delta = clock.getDelta()
     const elapsed = clock.elapsedTime
-    mixerState.mixer?.update(delta)
     const target = sceneTargets[document.body.dataset.scene || 'home'] || sceneTargets.home
     world.rotation.x += (target.rx + mouseY * 0.028 - world.rotation.x) * 0.03
     world.rotation.y += (target.ry + mouseX * 0.04 - world.rotation.y) * 0.03
@@ -456,9 +397,13 @@ export function initThreeScene({ rootSelector = '#three-scene-root' } = {}) {
     parts.leftArmPivot.rotation.x = -gait * 0.28
     parts.rightArmPivot.rotation.x = action ? -1.05 : gait * 0.22
     parts.rightForearm.rotation.z = action ? -0.58 : 0.22
-    parts.rightHand.position.set(action ? 1.32 : 1.12, action ? 0.56 : 0.18, 0.2)
-    parts.core.rotation.y += 0.025
+    parts.rightHand.position.set(action ? 1.32 : 1.13, action ? 0.56 : 0.17, 0.21)
+    parts.chestCore.rotation.y += 0.025
     robot.position.y += (-0.62 + Math.abs(gait) * 0.035 - robot.position.y) * 0.12
+    robot.children.forEach(child => {
+      if (child.userData?.rotationSpeed) child.rotation.z += child.userData.rotationSpeed
+      if (child.userData?.isRobotParticles) child.rotation.y += 0.006
+    })
 
     if (action && actionAge > 0.75) {
       const handWorld = new THREE.Vector3()
@@ -469,20 +414,12 @@ export function initThreeScene({ rootSelector = '#three-scene-root' } = {}) {
       beam.material.opacity = Math.min(0.9, Math.max(0, (actionAge - 0.75) * 2))
     }
 
-    robot.children.forEach(child => {
-      if (child.userData?.rotationSpeed) child.rotation.z += child.userData.rotationSpeed
-      if (child.userData?.isRobotParticles) child.rotation.y += 0.006
-    })
-    parts.fallback.children.forEach(child => {
-      if (child.userData?.rotationSpeed) child.rotation.z += child.userData.rotationSpeed
-      if (child.userData?.isRobotParticles) child.rotation.y += 0.006
-    })
     platform.children.forEach(child => { if (child.userData?.rotationSpeed) child.rotation.z += child.userData.rotationSpeed })
     digitalWorld.rotation.y = elapsed * 0.012
-    digitalWorld.children.forEach((child, index) => {
+    digitalWorld.children.forEach((child, i) => {
       if (child.userData?.target) {
-        child.position.y += Math.sin(elapsed * 1.4 + index) * 0.0009
-        child.rotation.y = -world.rotation.y * 0.5 + Math.sin(elapsed * 0.4 + index) * 0.05
+        child.position.y += Math.sin(elapsed * 1.4 + i) * 0.0009
+        child.rotation.y = -world.rotation.y * 0.5 + Math.sin(elapsed * 0.4 + i) * 0.05
       }
     })
 
@@ -490,7 +427,7 @@ export function initThreeScene({ rootSelector = '#three-scene-root' } = {}) {
     const hit = raycaster.intersectObjects(interactiveNodes, false)[0]
     hovered = hit?.object || null
     renderer.domElement.style.cursor = hovered ? 'pointer' : 'default'
-    interactiveNodes.forEach((node) => {
+    interactiveNodes.forEach(node => {
       const rootGroup = node.userData.rootGroup
       if (rootGroup) {
         const s = hovered === node ? 1.16 : 1
