@@ -1,33 +1,17 @@
-# Cinematic Robot GLB / GLTF
+# Optional Robot Model Directory
 
-把真正电影级机器人模型文件放到这个目录，推荐文件名：
+当前项目已经切换为 **Three.js 程序化 AI 机器人** 方案：
+
+- 不需要下载 `.glb/.gltf` 模型；
+- 不需要把 `robot.glb` 放进项目；
+- 机器人主体、发光眼睛、胸口 AI Core、机械手指、行走思考动作、科技粒子和悬浮模块，都由前端代码生成。
+
+这个目录只作为未来可选扩展保留。
+
+如果以后你还是想替换成专业 3D 模型，可以把模型放到：
 
 ```text
 public/models/robot.glb
 ```
 
-项目启动后 Three.js 会按顺序加载：
-
-1. `/models/robot.glb`
-2. `/models/robot.gltf`
-3. Three.js 官方示例 `RobotExpressive.glb` 作为演示级兜底模型
-
-## 模型要求
-
-- 推荐格式：`.glb`
-- 推荐带动画：Idle / Walk / Run / Gesture 任意一种即可
-- 推荐面数：Web 端建议控制在 30k - 150k triangles，移动端越低越好
-- 推荐贴图：2K 以内，包含 baseColor / normal / roughness / metallic
-- 命名建议：`robot.glb`
-
-## 注意
-
-GitHub 文本 API 不适合直接写入大型二进制 `.glb`。你可以在本地把购买或下载的模型复制到 `public/models/robot.glb`，然后执行：
-
-```bash
-git add public/models/robot.glb
-git commit -m "add cinematic robot model"
-git push
-```
-
-Vercel 自动重新部署后，页面会优先加载这个真正的本地电影级机器人模型。
+但当前主线已经不依赖它。
