@@ -12,71 +12,13 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
-    <canvas id="space-canvas" aria-hidden="true"></canvas>
+    <div id="three-scene-root" class="three-scene-root" aria-label="Three.js 3D AI 科技树场景"></div>
     <div id="cursor-dot" aria-hidden="true"></div>
     <div id="cursor-ring" aria-hidden="true"></div>
 
-    <div class="cosmic-world" aria-label="三维网络空间里的科技之树、半个地球和 AI 引导者">
-      <div class="depth-grid grid-back"></div>
-      <div class="depth-grid grid-mid"></div>
-      <div class="data-rain rain-left" aria-hidden="true">
-        <span>0101</span><span>API</span><span>MQ</span><span>JVM</span><span>Redis</span><span>Trace</span>
-      </div>
-      <div class="data-rain rain-right" aria-hidden="true">
-        <span>Gateway</span><span>SQL</span><span>FinTech</span><span>Job</span><span>Cache</span><span>Cloud</span>
-      </div>
-
-      <div class="ai-guide" id="ai-guide">
-        <div class="guide-orbit"></div>
-        <div class="guide-body">
-          <div class="guide-head"></div>
-          <div class="guide-core"></div>
-          <div class="guide-shadow"></div>
-        </div>
-        <div class="speech-bubble"><span id="welcome-text"></span></div>
-      </div>
-
-      <div class="world-core">
-        <div class="earth-wrap">
-          <div class="earth">
-            <div class="earth-glow"></div>
-            <div class="earth-grid-lines"></div>
-            <span class="city-dot dot-beijing" title="北京 / 金融科技"></span>
-            <span class="city-dot dot-qingdao" title="青岛 / 多式联运"></span>
-            <span class="city-dot dot-hk" title="香港 / 券商行情"></span>
-          </div>
-        </div>
-
-        <div class="root-system" aria-hidden="true">
-          <span class="root root-1"></span>
-          <span class="root root-2"></span>
-          <span class="root root-3"></span>
-          <span class="root root-4"></span>
-          <span class="root root-5"></span>
-          <span class="root root-6"></span>
-          <span class="root root-7"></span>
-          <span class="root root-8"></span>
-        </div>
-
-        <div class="tech-tree">
-          <button class="tree-node node-about" data-target="about">About</button>
-          <button class="tree-node node-skills" data-target="skills">Skills</button>
-          <button class="tree-node node-exp" data-target="experience">Experience</button>
-          <button class="tree-node node-projects" data-target="projects">Projects</button>
-          <button class="tree-node node-github" data-target="github">GitHub</button>
-          <button class="tree-node node-contact" data-target="contact">Contact</button>
-          <div class="tree-trunk"></div>
-          <div class="branch b1"></div>
-          <div class="branch b2"></div>
-          <div class="branch b3"></div>
-          <div class="branch b4"></div>
-          <div class="branch b5"></div>
-          <div class="branch b6"></div>
-          <div class="crown-orbit orbit-1"></div>
-          <div class="crown-orbit orbit-2"></div>
-          <div class="crown-orbit orbit-3"></div>
-        </div>
-      </div>
+    <div class="scene-status" id="scene-status" aria-hidden="true">
+      <span class="status-dot"></span>
+      <span id="welcome-text">Loading AI Guide...</span>
     </div>
 
     <header class="site-header" id="site-header">
@@ -113,9 +55,9 @@
             <a class="btn text" href="https://github.com/zbyisredeemer" target="_blank" rel="noreferrer">View GitHub</a>
           </div>
           <div class="terminal-strip" aria-label="技术背景命令行">
-            <span>&gt; initializing java backend profile...</span>
-            <span>&gt; connecting open-api gateway...</span>
-            <span>&gt; rendering high-concurrency trade flow...</span>
+            <span>&gt; initializing three.js digital garden...</span>
+            <span>&gt; rendering AI guide and tech tree...</span>
+            <span>&gt; mapping fintech experience nodes...</span>
           </div>
         </div>
       </section>
