@@ -66,8 +66,76 @@ main textarea,
   pointer-events: auto;
 }
 
+.module-jump-effect {
+  position: fixed;
+  inset: 0;
+  z-index: 170;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at center, rgba(34, 211, 238, .16), transparent 38%);
+  animation: moduleFade 1.05s ease forwards;
+}
+
+.jump-ring {
+  position: absolute;
+  width: 28vmin;
+  height: 28vmin;
+  border-radius: 50%;
+  border: 1px solid rgba(125, 211, 252, .72);
+  box-shadow: 0 0 50px rgba(34, 211, 238, .52), inset 0 0 40px rgba(34, 211, 238, .22);
+  animation: ringExpand 1.05s ease forwards;
+}
+
+.jump-copy {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  text-align: center;
+  padding: 22px 34px;
+  border: 1px solid rgba(125, 211, 252, .38);
+  border-radius: 24px;
+  background: rgba(2, 6, 23, .72);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 24px 90px rgba(0, 0, 0, .38);
+  transform: translateY(10px);
+  animation: copyRise 1.05s ease forwards;
+}
+
+.jump-copy span {
+  color: var(--cyan);
+  font-size: 12px;
+  letter-spacing: .28em;
+  font-weight: 900;
+}
+
+.jump-copy strong {
+  font-size: clamp(32px, 6vw, 76px);
+  line-height: 1;
+  color: #e6f6ff;
+  text-shadow: 0 0 24px rgba(34, 211, 238, .58);
+}
+
 body::after {
   pointer-events: none;
+}
+
+@keyframes moduleFade {
+  0% { opacity: 0; }
+  18% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes ringExpand {
+  0% { transform: scale(.35) rotate(0deg); opacity: 0; }
+  28% { opacity: 1; }
+  100% { transform: scale(3.4) rotate(130deg); opacity: 0; }
+}
+
+@keyframes copyRise {
+  0% { transform: translateY(16px) scale(.92); opacity: 0; }
+  24% { opacity: 1; }
+  100% { transform: translateY(-10px) scale(1.04); opacity: 0; }
 }
 
 @media (max-width: 640px) {
