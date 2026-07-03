@@ -61,9 +61,7 @@ main textarea,
 
 .hero-copy,
 .content-shell {
-  background: linear-gradient(135deg, rgba(2, 6, 23, .74), rgba(9, 24, 43, .44));
-  backdrop-filter: blur(18px);
-  pointer-events: auto;
+  display: none !important;
 }
 
 .module-jump-effect {
@@ -136,9 +134,7 @@ main textarea,
 .portfolio-module-backdrop {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle at 50% 42%, rgba(34, 211, 238, .18), transparent 35%),
-    rgba(2, 6, 23, .48);
+  background: radial-gradient(circle at 50% 42%, rgba(34, 211, 238, .18), transparent 35%), rgba(2, 6, 23, .48);
   backdrop-filter: blur(10px);
 }
 
@@ -150,9 +146,7 @@ main textarea,
   border: 1px solid rgba(125, 211, 252, .38);
   border-radius: 34px;
   padding: clamp(24px, 4vw, 44px);
-  background:
-    linear-gradient(135deg, rgba(2, 6, 23, .92), rgba(8, 32, 56, .78)),
-    radial-gradient(circle at 20% 0%, rgba(34, 211, 238, .18), transparent 38%);
+  background: linear-gradient(135deg, rgba(2, 6, 23, .92), rgba(8, 32, 56, .78)), radial-gradient(circle at 20% 0%, rgba(34, 211, 238, .18), transparent 38%);
   box-shadow: 0 34px 120px rgba(0, 0, 0, .58), inset 0 0 80px rgba(34, 211, 238, .06);
   transform: translateY(28px) scale(.96);
   transition: transform .38s ease;
