@@ -3,6 +3,12 @@ import './styles.css'
 
 const $ = (selector, scope = document) => scope.querySelector(selector)
 const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector))
+const escapeHtml = (value) => String(value)
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#039;')
 
 function typeWelcome() {
   const el = $('#welcome-text')
@@ -223,13 +229,14 @@ function setupContactForm() {
 }
 
 const terminalCommands = {
-  help: `Available commands: about, skills, projects, experience, github, resume, contact, clear`,
-  about: `${profile.name} - ${profile.title}. Focus: FinTech, Open API, distributed backend systems.`,
+  help: 'Available commands: about, skills, projects, experience, github, resume, download, contact, clear',
+  about: `${profile.name} - ${profile.title}. Focus: Java backend, microservices, high-concurrency transaction flow and stability governance.`,
   skills: skills.map(s => `${s.name}(${s.group})`).join(' · '),
   projects: projects.map(p => `- ${p.name}`).join('\n'),
   experience: experiences.map(e => `${e.period} | ${e.company} | ${e.role}`).join('\n'),
   github: profile.githubUrl,
-  resume: 'Opening resume download...',
+  resume: 'Opening online resume viewer...',
+  download: 'Opening full Markdown resume download...',
   contact: `mailto:${profile.email}`
 }
 
@@ -257,9 +264,10 @@ function setupTerminal() {
       return
     }
     const response = terminalCommands[normalized] || `Command not found: ${normalized}. Try "help".`
-    output.insertAdjacentHTML('beforeend', `<p class="command-line">&gt; ${normalized}</p><pre>${response}</pre>`)
+    output.insertAdjacentHTML('beforeend', `<p class="command-line">&gt; ${escapeHtml(normalized)}</p><pre>${escapeHtml(response)}</pre>`)
     output.scrollTop = output.scrollHeight
-    if (normalized === 'resume') window.open(profile.resumeUrl, '_blank')
+    if (normalized === 'resume') window.open(profile.resumeOnlineUrl, '_blank')
+    if (normalized === 'download') window.open(profile.resumeUrl, '_blank')
     if (normalized === 'github') window.open(profile.githubUrl, '_blank')
     if (normalized === 'contact') window.location.href = `mailto:${profile.email}`
   }
