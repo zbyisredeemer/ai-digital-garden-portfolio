@@ -1,8 +1,8 @@
-import { initThreeScene } from './threeScene.js'
 import { profile, skills, experiences, projects } from './config.js'
 import './styles.css'
 import './three-overrides.css'
 import './galaxy-overrides.css'
+import './bechir-overrides.css'
 
 const $ = (selector, scope = document) => scope.querySelector(selector)
 const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector))
@@ -13,54 +13,12 @@ const escapeHtml = (value) => String(value)
   .replaceAll('"', '&quot;')
   .replaceAll("'", '&#039;')
 
-function typeWelcome() {
-  const el = $('#welcome-text')
-  if (!el) return
-  const text = 'Drag to rotate 360°. Scroll to zoom. Click a star to open a portfolio module.'
-  let index = 0
-  const tick = () => {
-    el.textContent = text.slice(0, index)
-    index += 1
-    if (index <= text.length) window.setTimeout(tick, 28)
-  }
-  tick()
-}
-
-function setupCursor() {
-  const dot = $('#cursor-dot')
-  const ring = $('#cursor-ring')
-  if (!dot || !ring) return
-  let x = window.innerWidth / 2
-  let y = window.innerHeight / 2
-  let ringX = x
-  let ringY = y
-
-  document.addEventListener('mousemove', (e) => {
-    x = e.clientX
-    y = e.clientY
-    dot.style.transform = `translate(${x}px, ${y}px)`
-  })
-
-  function animate() {
-    ringX += (x - ringX) * 0.17
-    ringY += (y - ringY) * 0.17
-    ring.style.transform = `translate(${ringX}px, ${ringY}px)`
-    requestAnimationFrame(animate)
-  }
-  animate()
-
-  $$('a, button, input, textarea').forEach((el) => {
-    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-active'))
-    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-active'))
-  })
-}
-
 function getModuleData(moduleName) {
   const key = String(moduleName || '').toLowerCase()
   if (key === 'about') {
     return {
       title: 'About / 个人概述',
-      kicker: 'GALAXY CORE',
+      kicker: 'PROFILE',
       body: '9年+ Java 后端开发经验，参与并负责过多式联运数字一单制平台、证券开放 API 平台、银行资金链路、C2M 电商平台、实时行情接入、物业 SaaS 等核心系统建设。',
       cards: [
         ['核心定位', '资深 Java 后端工程师 / 项目 Owner / 后端技术负责人方向'],
@@ -71,24 +29,24 @@ function getModuleData(moduleName) {
   }
   if (key === 'skills') {
     return {
-      title: 'Skills / 技能星云',
-      kicker: 'SKILL CONSTELLATION',
-      body: '这些星点代表后端工程能力、分布式系统能力、数据库缓存能力、链路稳定性能力和 AI 工程化能力。',
+      title: 'Skills / 技术能力',
+      kicker: 'STACK',
+      body: '围绕高并发访问、分布式一致性、接口治理、缓存治理、消息可靠性、幂等控制、异步补偿和性能优化进行系统设计。',
       cards: skills.map(skill => [skill.name, `${skill.group} · ${skill.level}%`])
     }
   }
   if (key === 'experience') {
     return {
-      title: 'Experience / 经历星轨',
-      kicker: 'CAREER ORBIT',
+      title: 'Experience / 工作经历',
+      kicker: 'CAREER',
       body: '从业务系统开发到核心后端工程师，再到项目 Owner，持续沉淀系统设计、稳定性治理和跨团队交付能力。',
       cards: experiences.map(item => [item.company, `${item.period}｜${item.role}\n${item.summary}`])
     }
   }
   if (key === 'projects') {
     return {
-      title: 'Projects / 项目星系',
-      kicker: 'PROJECT GALAXY',
+      title: 'Projects / 代表项目',
+      kicker: 'WORKS',
       body: '每个项目对应一个业务复杂度与工程能力的综合节点，突出架构设计、链路稳定性、性能优化和业务落地。',
       cards: projects.map(project => [project.name, `${project.type}\n${project.highlight}\n${project.desc}`])
     }
@@ -96,7 +54,7 @@ function getModuleData(moduleName) {
   if (key === 'github') {
     return {
       title: 'GitHub / 技术足迹',
-      kicker: 'PUBLIC SIGNAL',
+      kicker: 'SIGNAL',
       body: '公开技术足迹可以作为可信度资产，后续可接入真实 GitHub Contributions、项目 README 和技术博客。',
       cards: [
         ['GitHub', profile.githubUrl],
@@ -107,7 +65,7 @@ function getModuleData(moduleName) {
   }
   return {
     title: 'Contact / 联系我',
-    kicker: 'DIRECT CHANNEL',
+    kicker: 'CONTACT',
     body: '欢迎交流 Java 后端、微服务架构、高并发交易链路、稳定性治理、开放 API、金融科技和 AI Coding。',
     cards: [
       ['邮箱', profile.email],
@@ -162,56 +120,125 @@ function setupModuleOverlay() {
     if (event.key === 'Escape') closeModule()
   })
   window.addEventListener('portfolio:open-module', (event) => openModule(event.detail?.target || event.detail?.label || 'about'))
-  window.addEventListener('portfolio:close-module', closeModule)
 }
 
-function setupGalaxyNav() {
-  const nav = document.createElement('aside')
-  nav.className = 'galaxy-nav'
-  nav.innerHTML = `
-    <button class="galaxy-star-toggle" type="button" aria-label="打开星图导航" aria-expanded="false"><span>✦</span></button>
-    <div class="galaxy-nav-panel">
-      <div class="galaxy-nav-title">
-        <strong>Benyu Zhang Galaxy</strong>
-        <span>拖拽旋转，滚轮缩放，点击星点查看模块。</span>
-      </div>
-      <div class="galaxy-nav-actions">
-        <button type="button" data-module="about">About <span>01</span></button>
-        <button type="button" data-module="skills">Skills <span>02</span></button>
-        <button type="button" data-module="experience">Experience <span>03</span></button>
-        <button type="button" data-module="projects">Projects <span>04</span></button>
-        <button type="button" data-module="github">GitHub <span>05</span></button>
-        <button type="button" data-module="contact">Contact <span>06</span></button>
-        <a href="/resume.html" target="_blank" rel="noreferrer">View Resume <span>↗</span></a>
-        <a href="/resume-zhang-benyu.md" download>Download MD <span>↓</span></a>
-      </div>
-    </div>
-  `
-  document.body.appendChild(nav)
+function cardTags(project) {
+  return project.stack?.slice(0, 4).map(tag => `<span>${escapeHtml(tag)}</span>`).join('') || ''
+}
 
-  const toggle = nav.querySelector('.galaxy-star-toggle')
-  toggle.addEventListener('click', () => {
-    const open = nav.classList.toggle('open')
-    toggle.setAttribute('aria-expanded', String(open))
-  })
-  nav.querySelectorAll('[data-module]').forEach((button) => {
-    button.addEventListener('click', () => {
-      nav.classList.remove('open')
-      toggle.setAttribute('aria-expanded', 'false')
-      window.dispatchEvent(new CustomEvent('portfolio:open-module', { detail: { target: button.dataset.module } }))
+function setupBechirPortfolio() {
+  const page = document.createElement('div')
+  page.className = 'bechir-page'
+  page.innerHTML = `
+    <div class="bechir-orb" aria-hidden="true"></div>
+    <nav class="bechir-nav">
+      <a class="bechir-brand" href="#top" aria-label="Benyu Zhang Home">
+        <span class="bechir-brand-mark">BZ</span>
+        <span>Benyu Zhang</span>
+      </a>
+      <div class="bechir-links">
+        <button type="button" data-module="about">About</button>
+        <button type="button" data-module="skills">Skills</button>
+        <button type="button" data-module="experience">Experience</button>
+        <button type="button" data-module="projects">Projects</button>
+        <button type="button" data-module="contact">Contact</button>
+        <a href="/resume.html" target="_blank" rel="noreferrer">Resume</a>
+      </div>
+    </nav>
+
+    <section class="bechir-hero" id="top">
+      <div>
+        <div class="bechir-kicker">Portfolio / Senior Java Engineer</div>
+        <h1 class="bechir-title"><span>Benyu</span><span><em>Zhang</em></span></h1>
+        <p class="bechir-subtitle">I build backend systems for securities, banking payment flows, open APIs, real-time market data and business-critical platforms.</p>
+        <div class="bechir-actions">
+          <button class="bechir-button primary" type="button" data-module="projects">Explore Projects →</button>
+          <button class="bechir-button" type="button" data-module="skills">View Stack</button>
+          <a class="bechir-button" href="mailto:${profile.email}">Contact</a>
+        </div>
+      </div>
+      <div class="bechir-stage" aria-hidden="true">
+        <div class="bechir-card-stack">
+          ${projects.slice(0, 3).map((project, index) => `
+            <article class="bechir-showcase-card">
+              <div class="bechir-card-index">0${index + 1}</div>
+              <h3>${escapeHtml(project.name)}</h3>
+              <p>${escapeHtml(project.highlight || project.desc)}</p>
+              <div class="bechir-tags">${cardTags(project)}</div>
+            </article>
+          `).join('')}
+        </div>
+      </div>
+    </section>
+
+    <section class="bechir-section" id="work">
+      <div class="bechir-section-head">
+        <h2>Selected<br>Works</h2>
+        <small>Project Cases</small>
+      </div>
+      <div class="bechir-grid">
+        ${projects.slice(0, 6).map((project) => `
+          <article class="bechir-tile" data-module="projects">
+            <strong>${escapeHtml(project.name)}</strong>
+            <p>${escapeHtml(project.desc)}</p>
+            <div class="bechir-meta">${project.stack.slice(0, 3).map(tag => `<span>${escapeHtml(tag)}</span>`).join('')}</div>
+          </article>
+        `).join('')}
+      </div>
+    </section>
+
+    <section class="bechir-section" id="stack">
+      <div class="bechir-section-head">
+        <h2>Stack &<br>Systems</h2>
+        <small>Engineering Field</small>
+      </div>
+      <div class="bechir-grid">
+        ${skills.slice(0, 9).map((skill) => `
+          <article class="bechir-tile" data-module="skills">
+            <strong>${escapeHtml(skill.name)}</strong>
+            <p>${escapeHtml(skill.group)} · ${skill.level}%</p>
+            <div class="bechir-meta"><span>${escapeHtml(skill.group)}</span></div>
+          </article>
+        `).join('')}
+      </div>
+    </section>
+
+    <section class="bechir-section" id="career">
+      <div class="bechir-section-head">
+        <h2>Career<br>Orbit</h2>
+        <small>Experience</small>
+      </div>
+      <div class="bechir-grid">
+        ${experiences.slice(0, 6).map((item) => `
+          <article class="bechir-tile" data-module="experience">
+            <strong>${escapeHtml(item.company)}</strong>
+            <p>${escapeHtml(item.period)}｜${escapeHtml(item.role)}<br>${escapeHtml(item.summary)}</p>
+          </article>
+        `).join('')}
+      </div>
+    </section>
+
+    <footer class="bechir-footer">
+      <span>© ${new Date().getFullYear()} Benyu Zhang</span>
+      <span>${profile.email}</span>
+      <span>${profile.githubUrl}</span>
+    </footer>
+  `
+  document.body.appendChild(page)
+
+  page.querySelectorAll('[data-module]').forEach((item) => {
+    item.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('portfolio:open-module', { detail: { target: item.dataset.module } }))
     })
   })
-  document.addEventListener('click', (event) => {
-    if (!nav.contains(event.target)) {
-      nav.classList.remove('open')
-      toggle.setAttribute('aria-expanded', 'false')
-    }
-  })
 
-  const hint = document.createElement('div')
-  hint.className = 'galaxy-hint'
-  hint.textContent = '拖拽鼠标 360° 旋转宇宙，滚轮放大/缩小，点击发光星点打开技能、项目、经历等模块。左上角小星星是收起的导航。'
-  document.body.appendChild(hint)
+  const stack = page.querySelector('.bechir-card-stack')
+  page.addEventListener('pointermove', (event) => {
+    if (!stack) return
+    const x = (event.clientX / window.innerWidth - 0.5) * 2
+    const y = (event.clientY / window.innerHeight - 0.5) * 2
+    stack.style.transform = `rotateY(${x * 8}deg) rotateX(${-y * 6}deg)`
+  })
 }
 
 const terminalCommands = {
@@ -232,15 +259,6 @@ function setupTerminal() {
   const input = $('#terminal-command')
   if (!modal || !output || !input) return
 
-  const open = () => {
-    modal.classList.add('open')
-    modal.setAttribute('aria-hidden', 'false')
-    window.setTimeout(() => input.focus(), 80)
-  }
-  const close = () => {
-    modal.classList.remove('open')
-    modal.setAttribute('aria-hidden', 'true')
-  }
   function print(command) {
     const normalized = command.trim().toLowerCase()
     if (!normalized) return
@@ -257,10 +275,6 @@ function setupTerminal() {
     if (normalized === 'contact') window.location.href = `mailto:${profile.email}`
   }
 
-  $('#open-terminal')?.addEventListener('click', open)
-  $('#close-terminal')?.addEventListener('click', close)
-  modal.addEventListener('click', (event) => { if (event.target === modal) close() })
-  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close() })
   $('#terminal-form')?.addEventListener('submit', (event) => {
     event.preventDefault()
     print(input.value)
@@ -270,11 +284,8 @@ function setupTerminal() {
 }
 
 function boot() {
-  initThreeScene()
-  typeWelcome()
-  setupCursor()
   setupModuleOverlay()
-  setupGalaxyNav()
+  setupBechirPortfolio()
   setupTerminal()
 }
 
