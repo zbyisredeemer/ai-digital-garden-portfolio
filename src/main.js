@@ -16,7 +16,7 @@ const escapeHtml = (value) => String(value)
 function typeWelcome() {
   const el = $('#welcome-text')
   if (!el) return
-  const text = 'Move through the galaxy. Click a star to open a portfolio module.'
+  const text = 'Drag to rotate 360°. Scroll to zoom. Click a star to open a portfolio module.'
   let index = 0
   const tick = () => {
     el.textContent = text.slice(0, index)
@@ -173,7 +173,7 @@ function setupGalaxyNav() {
     <div class="galaxy-nav-panel">
       <div class="galaxy-nav-title">
         <strong>Benyu Zhang Galaxy</strong>
-        <span>点击星点或选择模块查看简历。</span>
+        <span>拖拽旋转，滚轮缩放，点击星点查看模块。</span>
       </div>
       <div class="galaxy-nav-actions">
         <button type="button" data-module="about">About <span>01</span></button>
@@ -210,7 +210,7 @@ function setupGalaxyNav() {
 
   const hint = document.createElement('div')
   hint.className = 'galaxy-hint'
-  hint.textContent = '移动鼠标观察宇宙视角，点击发光星点打开技能、项目、经历等模块。左上角小星星是收起的导航。'
+  hint.textContent = '拖拽鼠标 360° 旋转宇宙，滚轮放大/缩小，点击发光星点打开技能、项目、经历等模块。左上角小星星是收起的导航。'
   document.body.appendChild(hint)
 }
 
