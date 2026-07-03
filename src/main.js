@@ -1,6 +1,7 @@
 import { initThreeScene } from './threeScene.js'
 import { profile, skills, experiences, projects } from './config.js'
 import './styles.css'
+import './three-overrides.css'
 
 const $ = (selector, scope = document) => scope.querySelector(selector)
 const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector))
