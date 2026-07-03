@@ -1,0 +1,174 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #05060a;
+}
+
+body {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(125, 211, 252, .12), transparent 34%),
+    radial-gradient(circle at 20% 18%, rgba(167, 139, 250, .14), transparent 28%),
+    radial-gradient(circle at 84% 74%, rgba(244, 114, 182, .12), transparent 26%),
+    #05060a;
+}
+
+.site-header,
+.hero-copy,
+.content-shell,
+.terminal-trigger {
+  display: none !important;
+}
+
+main {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.three-scene-root {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.scene-status {
+  left: 50% !important;
+  bottom: 28px !important;
+  transform: translateX(-50%);
+  color: rgba(226, 246, 255, .72);
+  background: rgba(5, 6, 10, .46);
+  border-color: rgba(125, 211, 252, .2);
+}
+
+.status-dot {
+  background: #facc15;
+  box-shadow: 0 0 0 6px rgba(250, 204, 21, .1), 0 0 22px #facc15;
+}
+
+.galaxy-nav {
+  position: fixed;
+  left: 22px;
+  top: 22px;
+  z-index: 120;
+}
+
+.galaxy-star-toggle {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 220, 150, .42);
+  border-radius: 50%;
+  color: #fff7d6;
+  background: radial-gradient(circle at 42% 36%, rgba(255,255,255,.95), rgba(250,204,21,.48) 22%, rgba(15,23,42,.34) 62%, rgba(2,6,23,.54));
+  box-shadow: 0 0 24px rgba(250, 204, 21, .36), 0 0 80px rgba(125, 211, 252, .14);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.galaxy-star-toggle:hover,
+.galaxy-nav.open .galaxy-star-toggle {
+  transform: scale(1.08) rotate(12deg);
+  box-shadow: 0 0 34px rgba(250, 204, 21, .58), 0 0 120px rgba(125, 211, 252, .22);
+}
+
+.galaxy-star-toggle span {
+  font-size: 24px;
+  line-height: 1;
+  text-shadow: 0 0 18px rgba(255,255,255,.9);
+}
+
+.galaxy-nav-panel {
+  position: absolute;
+  left: 0;
+  top: 62px;
+  width: 278px;
+  padding: 14px;
+  border: 1px solid rgba(125, 211, 252, .22);
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(2,6,23,.82), rgba(12,28,54,.58)), radial-gradient(circle at 0% 0%, rgba(250,204,21,.16), transparent 36%);
+  box-shadow: 0 24px 90px rgba(0,0,0,.42), inset 0 0 40px rgba(125,211,252,.05);
+  backdrop-filter: blur(18px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px) scale(.96);
+  transition: opacity .22s ease, transform .22s ease;
+}
+
+.galaxy-nav.open .galaxy-nav-panel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.galaxy-nav-title {
+  display: grid;
+  gap: 4px;
+  padding: 10px 10px 14px;
+  border-bottom: 1px solid rgba(125, 211, 252, .14);
+  margin-bottom: 10px;
+}
+
+.galaxy-nav-title strong { color: #e6f6ff; font-size: 15px; }
+.galaxy-nav-title span { color: rgba(186, 230, 253, .72); font-size: 12px; }
+
+.galaxy-nav-actions { display: grid; gap: 8px; }
+
+.galaxy-nav-actions button,
+.galaxy-nav-actions a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 38px;
+  width: 100%;
+  padding: 0 12px;
+  border: 1px solid rgba(125, 211, 252, .14);
+  border-radius: 14px;
+  color: rgba(226, 246, 255, .88);
+  background: rgba(15, 23, 42, .42);
+  text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.galaxy-nav-actions button:hover,
+.galaxy-nav-actions a:hover {
+  color: #fff7d6;
+  border-color: rgba(250, 204, 21, .32);
+  background: rgba(250, 204, 21, .08);
+}
+
+.galaxy-hint {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 4;
+  max-width: 280px;
+  padding: 12px 14px;
+  border: 1px solid rgba(125, 211, 252, .16);
+  border-radius: 18px;
+  color: rgba(226, 246, 255, .62);
+  background: rgba(2, 6, 23, .34);
+  backdrop-filter: blur(14px);
+  font-size: 12px;
+  line-height: 1.6;
+  pointer-events: none;
+}
+
+.jump-copy span,
+.portfolio-module-kicker { color: #facc15 !important; }
+
+@media (max-width: 760px) {
+  .galaxy-hint { display: none; }
+}
+
+@media (max-width: 640px) {
+  .galaxy-nav { left: 14px; top: 14px; }
+  .galaxy-nav-panel { width: min(280px, calc(100vw - 28px)); }
+  .scene-status { left: 18px !important; right: 18px !important; bottom: 16px !important; transform: none; border-radius: 18px; }
+}
