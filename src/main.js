@@ -2,6 +2,7 @@ import { initThreeScene } from './threeScene.js'
 import { profile, skills, experiences, projects } from './config.js'
 import './styles.css'
 import './three-overrides.css'
+import './galaxy-overrides.css'
 
 const $ = (selector, scope = document) => scope.querySelector(selector)
 const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector))
@@ -15,12 +16,12 @@ const escapeHtml = (value) => String(value)
 function typeWelcome() {
   const el = $('#welcome-text')
   if (!el) return
-  const text = `Welcome, I am ${profile.englishName}'s AI Guide.`
+  const text = 'Move through the galaxy. Click a star to open a portfolio module.'
   let index = 0
   const tick = () => {
     el.textContent = text.slice(0, index)
     index += 1
-    if (index <= text.length) window.setTimeout(tick, 42)
+    if (index <= text.length) window.setTimeout(tick, 28)
   }
   tick()
 }
@@ -54,115 +55,13 @@ function setupCursor() {
   })
 }
 
-function renderSkills() {
-  const container = $('#skill-constellation')
-  if (!container) return
-  container.innerHTML = skills.map((skill, index) => {
-    const angle = (index / skills.length) * Math.PI * 2
-    const radius = index % 2 === 0 ? 40 : 78
-    const x = 50 + Math.cos(angle) * radius * 0.35
-    const y = 50 + Math.sin(angle) * radius * 0.28
-    return `
-      <button class="skill-node" style="--x:${x}%;--y:${y}%;--level:${skill.level}%" type="button">
-        <strong>${skill.name}</strong>
-        <span>${skill.group}</span>
-      </button>
-    `
-  }).join('')
-}
-
-function renderExperience() {
-  const container = $('#timeline')
-  if (!container) return
-  container.innerHTML = experiences.map((item, index) => `
-    <article class="timeline-item" style="--delay:${index * 120}ms">
-      <div class="timeline-dot"></div>
-      <div class="timeline-content glass-card">
-        <div class="timeline-meta"><span>${item.period}</span><span>${item.location}</span></div>
-        <h3>${item.company}</h3>
-        <strong>${item.role}</strong>
-        <p>${item.summary}</p>
-        <ul>${item.points.map(point => `<li>${point}</li>`).join('')}</ul>
-      </div>
-    </article>
-  `).join('')
-}
-
-function renderProjects() {
-  const container = $('#project-grid')
-  if (!container) return
-  container.innerHTML = projects.map((project, index) => `
-    <article class="project-card glass-card" style="--delay:${index * 80}ms">
-      <div class="planet planet-${(index % 6) + 1}"></div>
-      <div class="project-type">${project.type}</div>
-      <h3>${project.name}</h3>
-      <p>${project.desc}</p>
-      <div class="stack">${project.stack.map(s => `<span>${s}</span>`).join('')}</div>
-      <div class="highlight">${project.highlight}</div>
-    </article>
-  `).join('')
-}
-
-function renderHeatmap() {
-  const container = $('#heatmap')
-  if (!container) return
-  const cells = Array.from({ length: 52 * 7 }, (_, i) => {
-    const seed = Math.sin(i * 12.9898) * 43758.5453
-    const value = Math.abs(seed - Math.floor(seed))
-    const level = value > 0.78 ? 4 : value > 0.56 ? 3 : value > 0.35 ? 2 : value > 0.18 ? 1 : 0
-    return `<span class="heat-cell level-${level}" title="Contribution activity level ${level}"></span>`
-  })
-  container.innerHTML = `<div class="heat-grid">${cells.join('')}</div><p class="heat-note">视觉化热力图占位；真实贡献数据可后续接 GitHub API 或 ghchart 服务。</p>`
-}
-
-function setupNavigation() {
-  const navLinks = $$('.nav-link')
-  const sections = $$('.section')
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const id = entry.target.id
-        navLinks.forEach((link) => link.classList.toggle('active', link.getAttribute('href') === `#${id}`))
-        document.body.dataset.scene = entry.target.dataset.scene || id
-      }
-    })
-  }, { threshold: 0.42 })
-
-  sections.forEach((section) => observer.observe(section))
-}
-
-function setupReveal() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) entry.target.classList.add('visible')
-    })
-  }, { threshold: 0.16 })
-
-  $$('.reveal').forEach((el) => observer.observe(el))
-}
-
-function setupContactForm() {
-  const formEl = $('#contact-form')
-  if (!formEl) return
-  formEl.addEventListener('submit', (event) => {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-    const name = form.get('name') || 'Portfolio visitor'
-    const email = form.get('email') || ''
-    const message = form.get('message') || ''
-    const subject = encodeURIComponent(`Portfolio Contact from ${name}`)
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)
-    window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`
-  })
-}
-
 function getModuleData(moduleName) {
   const key = String(moduleName || '').toLowerCase()
   if (key === 'about') {
     return {
       title: 'About / 个人概述',
-      kicker: 'SYSTEM PROFILE',
-      body: `9年+ Java 后端开发经验，参与并负责过多式联运数字一单制平台、证券开放 API 平台、银行资金链路、C2M 电商平台、实时行情接入、物业 SaaS 等核心系统建设。`,
+      kicker: 'GALAXY CORE',
+      body: '9年+ Java 后端开发经验，参与并负责过多式联运数字一单制平台、证券开放 API 平台、银行资金链路、C2M 电商平台、实时行情接入、物业 SaaS 等核心系统建设。',
       cards: [
         ['核心定位', '资深 Java 后端工程师 / 项目 Owner / 后端技术负责人方向'],
         ['工程优势', '0-1 系统建设、复杂业务建模、核心链路设计、数据库建模、服务治理和生产稳定性优化'],
@@ -172,24 +71,24 @@ function getModuleData(moduleName) {
   }
   if (key === 'skills') {
     return {
-      title: 'Skills / 技术能力',
-      kicker: 'SKILL MATRIX',
-      body: '围绕高并发访问、分布式一致性、接口治理、缓存治理、消息可靠性、幂等控制、异步补偿和性能优化进行系统设计。',
+      title: 'Skills / 技能星云',
+      kicker: 'SKILL CONSTELLATION',
+      body: '这些星点代表后端工程能力、分布式系统能力、数据库缓存能力、链路稳定性能力和 AI 工程化能力。',
       cards: skills.map(skill => [skill.name, `${skill.group} · ${skill.level}%`])
     }
   }
   if (key === 'experience') {
     return {
-      title: 'Experience / 工作经历',
-      kicker: 'CAREER TIMELINE',
+      title: 'Experience / 经历星轨',
+      kicker: 'CAREER ORBIT',
       body: '从业务系统开发到核心后端工程师，再到项目 Owner，持续沉淀系统设计、稳定性治理和跨团队交付能力。',
       cards: experiences.map(item => [item.company, `${item.period}｜${item.role}\n${item.summary}`])
     }
   }
   if (key === 'projects') {
     return {
-      title: 'Projects / 项目星图',
-      kicker: 'PROJECT CONSTELLATION',
+      title: 'Projects / 项目星系',
+      kicker: 'PROJECT GALAXY',
       body: '每个项目对应一个业务复杂度与工程能力的综合节点，突出架构设计、链路稳定性、性能优化和业务落地。',
       cards: projects.map(project => [project.name, `${project.type}\n${project.highlight}\n${project.desc}`])
     }
@@ -197,7 +96,7 @@ function getModuleData(moduleName) {
   if (key === 'github') {
     return {
       title: 'GitHub / 技术足迹',
-      kicker: 'PUBLIC TECH SIGNAL',
+      kicker: 'PUBLIC SIGNAL',
       body: '公开技术足迹可以作为可信度资产，后续可接入真实 GitHub Contributions、项目 README 和技术博客。',
       cards: [
         ['GitHub', profile.githubUrl],
@@ -263,11 +162,61 @@ function setupModuleOverlay() {
     if (event.key === 'Escape') closeModule()
   })
   window.addEventListener('portfolio:open-module', (event) => openModule(event.detail?.target || event.detail?.label || 'about'))
+  window.addEventListener('portfolio:close-module', closeModule)
+}
+
+function setupGalaxyNav() {
+  const nav = document.createElement('aside')
+  nav.className = 'galaxy-nav'
+  nav.innerHTML = `
+    <button class="galaxy-star-toggle" type="button" aria-label="打开星图导航" aria-expanded="false"><span>✦</span></button>
+    <div class="galaxy-nav-panel">
+      <div class="galaxy-nav-title">
+        <strong>Benyu Zhang Galaxy</strong>
+        <span>点击星点或选择模块查看简历。</span>
+      </div>
+      <div class="galaxy-nav-actions">
+        <button type="button" data-module="about">About <span>01</span></button>
+        <button type="button" data-module="skills">Skills <span>02</span></button>
+        <button type="button" data-module="experience">Experience <span>03</span></button>
+        <button type="button" data-module="projects">Projects <span>04</span></button>
+        <button type="button" data-module="github">GitHub <span>05</span></button>
+        <button type="button" data-module="contact">Contact <span>06</span></button>
+        <a href="/resume.html" target="_blank" rel="noreferrer">View Resume <span>↗</span></a>
+        <a href="/resume-zhang-benyu.md" download>Download MD <span>↓</span></a>
+      </div>
+    </div>
+  `
+  document.body.appendChild(nav)
+
+  const toggle = nav.querySelector('.galaxy-star-toggle')
+  toggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('open')
+    toggle.setAttribute('aria-expanded', String(open))
+  })
+  nav.querySelectorAll('[data-module]').forEach((button) => {
+    button.addEventListener('click', () => {
+      nav.classList.remove('open')
+      toggle.setAttribute('aria-expanded', 'false')
+      window.dispatchEvent(new CustomEvent('portfolio:open-module', { detail: { target: button.dataset.module } }))
+    })
+  })
+  document.addEventListener('click', (event) => {
+    if (!nav.contains(event.target)) {
+      nav.classList.remove('open')
+      toggle.setAttribute('aria-expanded', 'false')
+    }
+  })
+
+  const hint = document.createElement('div')
+  hint.className = 'galaxy-hint'
+  hint.textContent = '移动鼠标观察宇宙视角，点击发光星点打开技能、项目、经历等模块。左上角小星星是收起的导航。'
+  document.body.appendChild(hint)
 }
 
 const terminalCommands = {
   help: 'Available commands: about, skills, projects, experience, github, resume, download, contact, clear',
-  about: `${profile.name} - ${profile.title}. Focus: Java backend, microservices, high-concurrency transaction flow and stability governance.`,
+  about: `${profile.name} - ${profile.title}.`,
   skills: skills.map(s => `${s.name}(${s.group})`).join(' · '),
   projects: projects.map(p => `- ${p.name}`).join('\n'),
   experience: experiences.map(e => `${e.period} | ${e.company} | ${e.role}`).join('\n'),
@@ -288,12 +237,10 @@ function setupTerminal() {
     modal.setAttribute('aria-hidden', 'false')
     window.setTimeout(() => input.focus(), 80)
   }
-
   const close = () => {
     modal.classList.remove('open')
     modal.setAttribute('aria-hidden', 'true')
   }
-
   function print(command) {
     const normalized = command.trim().toLowerCase()
     if (!normalized) return
@@ -312,34 +259,22 @@ function setupTerminal() {
 
   $('#open-terminal')?.addEventListener('click', open)
   $('#close-terminal')?.addEventListener('click', close)
-  modal.addEventListener('click', (event) => {
-    if (event.target === modal) close()
-  })
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') close()
-  })
+  modal.addEventListener('click', (event) => { if (event.target === modal) close() })
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close() })
   $('#terminal-form')?.addEventListener('submit', (event) => {
     event.preventDefault()
     print(input.value)
     input.value = ''
   })
-  $$('.terminal-quick-actions button').forEach((button) => {
-    button.addEventListener('click', () => print(button.dataset.command))
-  })
+  $$('.terminal-quick-actions button').forEach((button) => button.addEventListener('click', () => print(button.dataset.command)))
 }
 
 function boot() {
   initThreeScene()
   typeWelcome()
   setupCursor()
-  renderSkills()
-  renderExperience()
-  renderProjects()
-  renderHeatmap()
-  setupNavigation()
-  setupReveal()
-  setupContactForm()
   setupModuleOverlay()
+  setupGalaxyNav()
   setupTerminal()
 }
 
