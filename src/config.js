@@ -1,101 +1,118 @@
 export const profile = {
   name: '张本瑜',
-  englishName: 'Zhang Benyu',
+  englishName: 'Benyu Zhang',
   title: '资深 Java 后端工程师',
-  tagline: '9年+ Java后端开发经验｜金融科技｜微服务 / 分布式 / 高并发｜开放 API',
+  tagline: '9年+ Java 后端开发经验｜0-1 系统建设｜微服务架构｜高并发交易链路｜稳定性治理',
   location: '北京 / 远程协作',
   email: 'zhangbenyu_java@163.com',
   githubUser: 'zbyisredeemer',
   githubUrl: 'https://github.com/zbyisredeemer',
-  avatar: 'https://avatars.githubusercontent.com/u/46104333?v=4',
-  resumeUrl: '/resume-zhang-benyu.md'
+  avatar: '/avatar.svg',
+  resumeUrl: '/resume-zhang-benyu.md',
+  resumeOnlineUrl: '/resume.html'
 }
 
 export const skills = [
-  { name: 'Java', group: 'Core', level: 95 },
+  { name: 'Java 8', group: 'Backend', level: 95 },
   { name: 'Spring Boot', group: 'Backend', level: 94 },
-  { name: 'Spring Cloud Alibaba', group: 'Microservices', level: 90 },
-  { name: 'MyBatis / JPA', group: 'Persistence', level: 86 },
+  { name: 'Spring Cloud', group: 'Microservices', level: 90 },
+  { name: 'Spring Cloud Gateway', group: 'Gateway', level: 90 },
   { name: 'MySQL / Oracle', group: 'Database', level: 88 },
-  { name: 'Redis', group: 'Cache', level: 86 },
-  { name: 'RabbitMQ / RocketMQ', group: 'Messaging', level: 84 },
-  { name: 'Nacos / Feign / Gateway', group: 'Governance', level: 88 },
-  { name: 'Distributed Transaction', group: 'Architecture', level: 82 },
-  { name: 'XXL-JOB / Scheduler', group: 'Task', level: 82 },
-  { name: 'Observability', group: 'Ops', level: 78 },
+  { name: 'Redis', group: 'Cache', level: 88 },
+  { name: 'RabbitMQ / RocketMQ', group: 'Messaging', level: 86 },
+  { name: 'XXL-JOB / Scheduled', group: 'Task', level: 84 },
+  { name: 'Elasticsearch', group: 'Search', level: 78 },
+  { name: 'API Gateway / Auth', group: 'Governance', level: 90 },
+  { name: 'Idempotency / Compensation', group: 'Stability', level: 88 },
+  { name: 'High Concurrency', group: 'Architecture', level: 86 },
   { name: 'FinTech / Securities', group: 'Domain', level: 90 },
-  { name: 'Open API Platform', group: 'Domain', level: 88 },
-  { name: 'AI Coding Workflow', group: 'Productivity', level: 80 }
+  { name: 'AI Engineering Workflow', group: 'Productivity', level: 80 }
 ]
 
 export const experiences = [
   {
-    company: '亚信货云 / 金融科技方向',
-    period: '2023 - Now',
-    role: '高级 Java 后端工程师 / 核心模块 Owner',
-    location: '北京 / 青岛 / 香港业务协作',
-    summary: '负责证券开放 API、银行 eDDA 资金链路、多式联运数字一单制等核心系统建设，聚焦系统设计、链路稳定性、网关治理与性能优化。',
-    points: ['0-1 建设 Spring Cloud Alibaba 微服务体系', '沉淀资金链路补偿、幂等、对账与监控方案', '参与多团队协作、上线排障和核心链路治理']
+    company: '嘉瑜科技有限公司',
+    period: '2025.05 - 至今',
+    role: '资深 Java 开发工程师 / 项目 Owner',
+    location: '证券开放 API / eDDA / 暗盘行情',
+    summary: '参与证券开放 API 平台、银行 eDDA 资金链路、辉立暗盘行情接入等核心系统建设，聚焦接口治理、资金状态流转、异常补偿、幂等控制和实时行情推送。',
+    points: ['负责接口版本规范、网关路由、应用鉴权、权限控制和调用审计', '负责绑卡、入金、出金状态流转、异步回调、异常补偿和对账处理', '完成 PMP 行情源连接、订阅管理、行情解析、快照维护和 WebSocket 推送']
   },
   {
-    company: '必要工业科技 / 必要商城',
-    period: '2020 - 2023',
-    role: '资深 Java 工程师',
-    location: '北京',
-    summary: '参与统一业务网关、交易链路优化、数据交互规范建设，将单体网关逐步演进为更可治理的分布式集群。',
-    points: ['网关路由、鉴权、限流与灰度治理', '交易链路性能优化，吞吐量提升约 3 倍', '沉淀接口标准、业务隔离与稳定性策略']
+    company: '亚信货云（北京）科技有限公司',
+    period: '2023.06 - 2025.04',
+    role: '资深 Java 开发工程师 / 项目 Owner',
+    location: '多式联运 / 供应链金融 / 区块链存证',
+    summary: '主导项目从 0 到 1 建设，负责服务拆分、架构设计、数据库建模、核心模块开发及上线推进，推动电子提单、供应链金融和区块链存证能力落地。',
+    points: ['负责后端整体技术方案制定，推动分层架构、业务服务和区块链适配层落地', '参与需求拆解、迭代排期、技术评审及 Code Review', '负责上线宣讲、跨团队协作和外部系统对接']
   },
   {
-    company: '合生活 / 美亚柏科等早期经历',
-    period: '2016 - 2020',
-    role: 'Java 后端开发工程师',
-    location: '北京 / 厦门',
-    summary: '从业务系统开发逐步成长为核心后端工程师，积累 Spring、MyBatis、Oracle、Redis、MQ、权限与工作流等基础工程能力。',
-    points: ['负责智慧物业、业务系统、数据接口等后端模块', '参与权限、流程、报表、接口对接和生产问题排查', '建立面向业务闭环的工程交付意识']
+    company: '必要工业科技有限公司',
+    period: '2021.04 - 2023.06',
+    role: '高级 Java 开发工程师',
+    location: 'C2M 电商 / 统一业务网关 / 交易链路',
+    summary: '负责商城统一业务网关设计与开发，参与核心交易链路、商品详情、搜索索引同步、自营业务、订单履约和结算等模块建设。',
+    points: ['收敛 App / Web / 小程序三端业务入口，降低多端重复开发成本', '主导接口重构和业务抽象，提高新业务接入效率', '参与大促高峰下缓存治理、ES 同步、订单库存一致性和接口性能优化']
+  },
+  {
+    company: '厦门市美亚柏科信息股份有限公司（北京分公司）',
+    period: '2019.03 - 2021.04',
+    role: 'Java 开发工程师',
+    location: 'Spring Cloud / 微服务落地 / 稳定交付',
+    summary: '参与项目技术选型和 Spring Cloud 技术体系落地，负责接口开发、数据库设计、服务拆分、系统联调和上线问题排查。',
+    points: ['参与核心业务系统设计与开发', '制定开发标准与代码规范，提升研发协同效率和代码质量', '参与上线部署、问题排查和系统稳定性优化']
+  },
+  {
+    company: '北京合生活科技有限公司',
+    period: '2016.07 - 2019.01',
+    role: 'Java 开发工程师',
+    location: '智慧物业 SaaS / IoT 接入',
+    summary: '参与智慧物业 SaaS 平台核心业务开发，负责门禁、缴费、梯控、工单、第三方 IoT 服务对接和社区服务能力扩展。',
+    points: ['参与门禁、缴费、梯控、工单等核心业务模块建设', '对接第三方 IoT 服务，支持多类设备接入', '参与合优家陪护类 APP 的功能开发和业务落地']
   }
 ]
 
 export const projects = [
   {
-    name: '证券开放 API 平台建设与网关治理',
-    type: 'Open API Gateway',
-    desc: '面向券商开放能力建设，统一 API 路由、鉴权、版本治理、限流、日志追踪和服务隔离，为后续接口迭代提供稳定入口。',
-    stack: ['Spring Cloud Gateway', 'Nacos', 'Redis', 'MySQL', 'OpenAPI', 'Rate Limit'],
-    highlight: '接口标准化 + 网关优雅路由 + 版本演进能力'
-  },
-  {
-    name: '银行 eDDA 绑卡、入金、出金资金链路系统',
-    type: 'FinTech Payment Flow',
-    desc: '围绕 BOC / DBS 等银行链路构建绑卡、入金、出金、回执、对账、补偿和异常处理机制，重点保障资金链路稳定性。',
-    stack: ['Spring Boot', 'RabbitMQ', 'Redis', 'MySQL', 'XXL-JOB', 'State Machine'],
-    highlight: '幂等、补偿、对账、事务边界和异常恢复'
-  },
-  {
     name: '多式联运数字一单制平台',
-    type: '0-1 Digital Platform',
-    desc: '从 0 到 1 搭建微服务平台，支撑多式联运数字化业务流转，涉及服务拆分、注册治理、链路监控和核心流程建设。',
-    stack: ['Spring Cloud Alibaba', 'Nacos', 'Feign', 'Redis', 'RocketMQ', 'SkyWalking'],
-    highlight: '0-1 架构设计 + 微服务拆分 + 重点示范工程交付'
+    type: 'Electronic Bill / Supply Chain Finance / Fabric',
+    desc: '以电子提单、可信物流凭证、金融风控为核心，基于区块链构建多式联运协作平台，支撑物流数据可信流转和供应链金融场景落地。',
+    stack: ['Java', 'Spring Cloud', 'MySQL', 'Redis', 'RocketMQ', 'Redisson', 'Fabric'],
+    highlight: '0-1 平台建设 + 链上链下混合存储 + MQ 异步上链 + 状态机补偿'
+  },
+  {
+    name: '证券开放 API 平台建设与网关治理',
+    type: 'Open API / Auth / Gateway',
+    desc: '建设统一证券开放 API 平台，提供应用管理、接口权限、签名鉴权、版本路由、调用审计、限流控制和日志追踪能力。',
+    stack: ['Java 8', 'Spring Boot', 'Spring Cloud Gateway', 'Nacos', 'Redis', 'MySQL', 'JWT'],
+    highlight: '统一网关治理 + AK/SK + Token 双重安全 + Scope 权限模型 + 调用链路可追踪'
+  },
+  {
+    name: '银行 eDDA 资金链路系统',
+    type: 'Bind / Deposit / Withdraw / Reconciliation',
+    desc: '支持用户在线绑卡、入金、出金，覆盖银行接口调用、同步响应、异步回调、状态流转、补偿重试、异常码处理和数据对账。',
+    stack: ['Java 8', 'Spring Boot', 'MySQL', 'RabbitMQ', 'XXL-JOB', 'JPA', 'MyBatis'],
+    highlight: '状态机驱动资金流转 + 同步/异步/对账三层确认 + 幂等保护 + 补偿任务兜底'
   },
   {
     name: '必要商城统一业务网关与交易链路优化',
-    type: 'Commerce Gateway',
-    desc: '围绕统一网关、交易链路、服务治理和接口规范进行重构优化，提升系统吞吐、可维护性与业务承载能力。',
-    stack: ['Java', 'Dubbo', 'Redis', 'MySQL', 'Gateway', 'ElasticSearch'],
-    highlight: '单体网关向分布式治理演进，吞吐提升约 3 倍'
+    type: 'C2M Commerce / Gateway / Performance',
+    desc: '围绕 C2M 电商平台三端业务入口，负责统一业务网关、商品详情接口重构、搜索索引同步、自营业务、订单履约和结算模块建设。',
+    stack: ['Java', 'Spring', 'MySQL', 'Redis', 'Elasticsearch', 'RocketMQ'],
+    highlight: '三端统一接入 + 模板方法/策略模式重构 + ES 增量同步 + 缓存治理 + 订单库存一致性'
   },
   {
     name: '辉立暗盘行情接入与实时推送系统',
-    type: 'Realtime Market Data',
-    desc: '接入辉立暗盘行情，完成行情接收、处理、日志验证与 WebSocket 推送，支持本地模拟与线上行情一致性验证。',
-    stack: ['Spring Boot', 'WebSocket', 'Scheduler', 'Logback', 'Market Data'],
-    highlight: '实时行情链路验证 + 生产日志可追溯'
+    type: 'Realtime Market Data / WebSocket',
+    desc: '通过 Java 服务接入辉立 PMP 行情源，完成连接、登录、股票订阅、行情接收、数据解析、快照维护、增量处理和 WebSocket 推送。',
+    stack: ['Java 8', 'Spring Boot', 'WebSocket', 'PMP SDK', 'Scheduled', 'Logback', 'Linux'],
+    highlight: '行情服务独立化 + 动态订阅 + 快照增量处理 + 连接生命周期管理 + 日志校验'
   },
   {
-    name: 'IP 归属统一查询服务',
-    type: 'Internal Tool',
-    desc: '统一封装第三方 IP 归属 API 与本地缓存，提供单 IP、批量 IP、指定来源查询能力，降低重复接入成本。',
-    stack: ['Spring Boot', 'MyBatis-Plus', 'MySQL', 'HttpClient', 'Swagger'],
-    highlight: '责任链查询 + 6个月缓存 + 统一内部 API'
+    name: '合生活智慧物业 SaaS 平台',
+    type: 'Property SaaS / IoT / Community Service',
+    desc: '参与智慧物业 SaaS 平台核心业务开发，覆盖门禁、缴费、梯控、工单、IoT 设备接入和社区服务能力扩展。',
+    stack: ['Java', 'MySQL', 'Redis', 'MQ', 'IoT Integration'],
+    highlight: '门禁/梯控/缴费/工单核心模块 + 第三方 IoT 接入 + 适配器模式降低设备接入复杂度'
   }
 ]
